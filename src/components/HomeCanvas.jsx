@@ -19,7 +19,11 @@ const MODULES = [
     platform: 'iOS',
     domain: 'Finance',
     type: 'iOS Finance App',
-    description: 'AI-powered expense tracking',
+    description: 'Personal finance tracking built for expense organization and spending visibility.',
+    role: 'iOS Developer',
+    stack: 'Swift · SwiftUI · Personal Finance',
+    status: 'Active',
+    githubUrl: 'https://github.com/MahdiarMzi/spendly-ios',
     baseAngle: Math.PI * 1.12,
     baseRadius: 340,
     angularSpeed: 0.081,
@@ -35,10 +39,16 @@ const MODULES = [
   {
     id: 'shamsa',
     title: 'Shamsa',
+    panelTitle: 'Shamsa Immigration Website',
     platform: 'Web',
     domain: 'Immigration',
-    type: 'Web Immigration Platform',
-    description: 'Clear guidance for complex immigration journeys',
+    type: 'Client Website',
+    description: 'Production website for an immigration consulting business focused on clarity, trust, and responsive access.',
+    role: 'Web Developer',
+    stack: 'HTML · CSS · JavaScript · SEO',
+    status: 'Live',
+    liveUrl: 'https://shamsa.ca/',
+    githubUrl: 'https://github.com/MahdiarMzi/shamsa-immigration-website',
     baseAngle: Math.PI * 0.57,
     baseRadius: 274,
     angularSpeed: 0.074,
@@ -54,10 +64,16 @@ const MODULES = [
   {
     id: 'mahshid',
     title: 'Mahshid',
+    panelTitle: 'Mahshid Bridal Couture',
     platform: 'Web',
     domain: 'Fashion',
-    type: 'Web Fashion Experience',
-    description: 'An editorial digital home for modern fashion',
+    type: 'Boutique Website',
+    description: 'Elegant boutique website for presenting bridal couture and luxury fashion collections.',
+    role: 'Web Developer',
+    stack: 'HTML · CSS · JavaScript · Responsive Design',
+    status: 'Live',
+    liveUrl: 'https://mahshidcouture.com/',
+    githubUrl: 'https://github.com/MahdiarMzi/mahshid-bridal-couture',
     baseAngle: Math.PI * 0.04,
     baseRadius: 346,
     angularSpeed: 0.086,
@@ -73,10 +89,15 @@ const MODULES = [
   {
     id: 'job-tracker',
     title: 'Job Tracker',
+    panelTitle: 'Job Application Tracker',
     platform: 'Building',
     domain: 'Productivity',
-    type: 'Productivity Tool',
-    description: 'A focused system for organizing every application',
+    type: 'Web App',
+    description: 'Application tracking workspace for jobs, statuses, interviews, notes, and progress.',
+    role: 'Full-Stack Builder',
+    stack: 'React · Dashboard UI · Data Flow',
+    status: 'Building',
+    comingSoon: true,
     baseAngle: Math.PI * 1.57,
     baseRadius: 248,
     angularSpeed: 0.078,
@@ -116,6 +137,114 @@ const getFocusState = (progress) => {
 };
 
 const MODULE_BY_ID = Object.fromEntries(MODULES.map((mod) => [mod.id, mod]));
+
+function ProjectVisual({ projectId }) {
+  if (projectId === 'spendly') {
+    return (
+      <div className="project-visual project-visual--spendly" aria-hidden="true">
+        <div className="project-visual__phone">
+          <span className="project-visual__phone-bar" />
+          <span className="project-visual__balance" />
+          <span className="project-visual__chart"><i /><i /><i /><i /><i /></span>
+          <span className="project-visual__phone-row" />
+          <span className="project-visual__phone-row project-visual__phone-row--short" />
+        </div>
+        <div className="project-visual__orbit-mark project-visual__orbit-mark--one" />
+        <div className="project-visual__orbit-mark project-visual__orbit-mark--two" />
+      </div>
+    );
+  }
+
+  if (projectId === 'shamsa') {
+    return (
+      <div className="project-visual project-visual--shamsa" aria-hidden="true">
+        <div className="project-visual__browser">
+          <div className="project-visual__browser-bar"><i /><i /><i /><span /></div>
+          <div className="project-visual__web-hero"><span /><span /></div>
+          <div className="project-visual__web-grid"><i /><i /><i /></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (projectId === 'mahshid') {
+    return (
+      <div className="project-visual project-visual--mahshid" aria-hidden="true">
+        <div className="project-visual__editorial-image"><span /></div>
+        <div className="project-visual__editorial-copy">
+          <i />
+          <span />
+          <span />
+          <span className="project-visual__editorial-rule" />
+        </div>
+        <b>COLLECTION / 01</b>
+      </div>
+    );
+  }
+
+  return (
+    <div className="project-visual project-visual--tracker" aria-hidden="true">
+      <div className="project-visual__dashboard-bar"><span /><i /><i /></div>
+      <div className="project-visual__kanban">
+        <div><span /><i /><i /></div>
+        <div><span /><i /></div>
+        <div><span /><i /><i /></div>
+      </div>
+    </div>
+  );
+}
+
+function ProjectFocusPanel({ project, index, panelRef, mobile = false }) {
+  const title = project.panelTitle || project.title;
+
+  return (
+    <article
+      className={`project-focus-panel${mobile ? ' project-focus-panel--mobile' : ''}`}
+      ref={panelRef}
+      aria-hidden={mobile ? undefined : 'true'}
+    >
+      <header className="project-focus-panel__header">
+        <span className="project-focus-panel__index">0{index + 1}</span>
+        <div className="project-focus-panel__heading">
+          <h2>{title}</h2>
+          <p>{project.type}</p>
+        </div>
+        <span className={`project-focus-panel__status project-focus-panel__status--${project.status.toLowerCase()}`}>
+          {project.status}
+        </span>
+      </header>
+
+      <ProjectVisual projectId={project.id} />
+
+      <p className="project-focus-panel__description">{project.description}</p>
+
+      <dl className="project-focus-panel__meta">
+        <div>
+          <dt>Role</dt>
+          <dd>{project.role}</dd>
+        </div>
+        <div className="project-focus-panel__stack">
+          <dt>Stack</dt>
+          <dd>{project.stack}</dd>
+        </div>
+      </dl>
+
+      <div className="project-focus-panel__actions">
+        {project.liveUrl && (
+          <a href={project.liveUrl} target="_blank" rel="noreferrer">
+            Live Site <span aria-hidden="true">↗</span>
+          </a>
+        )}
+        {project.githubUrl && (
+          <a href={project.githubUrl} target="_blank" rel="noreferrer">
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
+        )}
+        {project.comingSoon && <span className="project-focus-panel__coming-soon">Coming Soon</span>}
+      </div>
+    </article>
+  );
+}
 
 function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   const [mobile, setMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
@@ -270,6 +399,8 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
         preview.style.opacity = previewWeight.toFixed(4);
         preview.style.transform = `translateY(calc(-50% + ${(1 - previewWeight) * 14}px)) scale(${(0.985 + previewWeight * 0.015).toFixed(4)})`;
         preview.style.visibility = previewWeight > 0.01 ? 'visible' : 'hidden';
+        preview.style.pointerEvents = previewWeight > 0.5 ? 'auto' : 'none';
+        preview.inert = previewWeight <= 0.5;
         preview.setAttribute('aria-hidden', previewWeight > 0.5 ? 'false' : 'true');
       }
     });
@@ -538,7 +669,11 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
               <p className="home-canvas__subtitle">Computer Studies · Vancouver</p>
             </div>
           </div>
-          {MODULES.map((mod) => <WorkspaceModule key={mod.id} {...moduleProps(mod)} />)}
+          <div className="mobile-project-sequence">
+            {MODULES.map((mod, index) => (
+              <ProjectFocusPanel key={mod.id} project={mod} index={index} mobile />
+            ))}
+          </div>
         </div>
 
         {selected && <p className="home-canvas__status" role="status" aria-live="polite">{selected.title} workspace selected</p>}
@@ -631,17 +766,12 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
 
           <div className="focus-preview-layer" aria-label="Active project preview">
             {MODULES.map((mod, index) => (
-              <article
+              <ProjectFocusPanel
                 key={mod.id}
-                className="focus-preview"
-                ref={(element) => { if (element) previewRefs.current[mod.id] = element; }}
-                aria-hidden="true"
-              >
-                <span className="focus-preview__index">0{index + 1}</span>
-                <h2 className="focus-preview__title">{mod.title}</h2>
-                <p className="focus-preview__type">{mod.type}</p>
-                <p className="focus-preview__description">{mod.description}</p>
-              </article>
+                project={mod}
+                index={index}
+                panelRef={(element) => { if (element) previewRefs.current[mod.id] = element; }}
+              />
             ))}
           </div>
 
