@@ -7,6 +7,8 @@ import bgMobile from '../assets/backgrounds/os-bg-mobile.webp';
 const TAU = Math.PI * 2;
 const MIN_ORBIT_RADIUS = 220;
 const MAX_ORBIT_RADIUS = 380;
+const FOCUS_X = -235;
+const FOCUS_Y = -28;
 const MOBILE_QUERY = '(max-width: 768px)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
@@ -16,6 +18,8 @@ const MODULES = [
     title: 'Spendly',
     platform: 'iOS',
     domain: 'Finance',
+    type: 'iOS Finance App',
+    description: 'AI-powered expense tracking',
     baseAngle: Math.PI * 1.12,
     baseRadius: 340,
     angularSpeed: 0.081,
@@ -33,6 +37,8 @@ const MODULES = [
     title: 'Shamsa',
     platform: 'Web',
     domain: 'Immigration',
+    type: 'Web Immigration Platform',
+    description: 'Clear guidance for complex immigration journeys',
     baseAngle: Math.PI * 0.57,
     baseRadius: 274,
     angularSpeed: 0.074,
@@ -50,6 +56,8 @@ const MODULES = [
     title: 'Mahshid',
     platform: 'Web',
     domain: 'Fashion',
+    type: 'Web Fashion Experience',
+    description: 'An editorial digital home for modern fashion',
     baseAngle: Math.PI * 0.04,
     baseRadius: 346,
     angularSpeed: 0.086,
@@ -67,6 +75,8 @@ const MODULES = [
     title: 'Job Tracker',
     platform: 'Building',
     domain: 'Productivity',
+    type: 'Productivity Tool',
+    description: 'A focused system for organizing every application',
     baseAngle: Math.PI * 1.57,
     baseRadius: 248,
     angularSpeed: 0.078,
@@ -90,6 +100,21 @@ const normalizeAngle = (angle) => {
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
+const smoothstep = (start, end, value) => {
+  const progress = clamp((value - start) / (end - start), 0, 1);
+  return progress * progress * (3 - 2 * progress);
+};
+
+const getFocusState = (progress) => {
+  const engagement = smoothstep(0.025, 0.13, progress);
+  const timeline = clamp((progress - 0.13) / 0.72, 0, 1) * (MODULES.length - 1);
+  const weights = MODULES.map((_, index) => {
+    const proximity = clamp(1 - Math.abs(timeline - index), 0, 1);
+    return smoothstep(0, 1, proximity) * engagement;
+  });
+  return { engagement, timeline, weights };
+};
+
 const MODULE_BY_ID = Object.fromEntries(MODULES.map((mod) => [mod.id, mod]));
 
 function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
@@ -99,13 +124,17 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   );
 
   const orbitRef = useRef(null);
+  const scrollRef = useRef(null);
   const centerRef = useRef({ x: 0, y: 0 });
   const moduleRefs = useRef({});
   const lineRefs = useRef({});
   const ringRefs = useRef({});
+  const previewRefs = useRef({});
+  const scrollCueRef = useRef(null);
   const rafRef = useRef(null);
   const suppressClickRef = useRef(null);
   const pointerRef = useRef(null);
+  const focusProgressRef = useRef({ current: 0, target: 0 });
   const statesRef = useRef(Object.fromEntries(MODULES.map((mod) => [mod.id, {
     angle: mod.baseAngle,
     targetAngle: mod.baseAngle,
@@ -122,6 +151,8 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
     focused: false,
     dragging: false,
   }])));
+
+  const guided = activeView === 'home' && !mobile && !reducedMotion;
 
   const isStabilized = useCallback((id) => {
     const state = statesRef.current[id];
@@ -169,32 +200,48 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
     const { x: cx, y: cy } = centerRef.current;
     if (!cx && !cy) return;
 
-    MODULES.forEach((mod) => {
+    const focus = getFocusState(focusProgressRef.current.current);
+
+    MODULES.forEach((mod, index) => {
       const state = statesRef.current[mod.id];
       const { x, y, depth, compression } = getPosition(mod);
       const stabilized = isStabilized(mod.id);
       const active = stabilized || state.dragging || state.adapting;
-      const scale = active ? 1.015 : 0.93 + 0.07 * depth;
-      const opacity = active ? 1 : 0.76 + 0.24 * depth;
+      const focusWeight = focus.weights[index];
+      const recedeWeight = focus.engagement * (1 - focusWeight);
+      const orbitScale = active ? 1.015 : 0.93 + 0.07 * depth;
+      const orbitOpacity = active ? 1 : 0.76 + 0.24 * depth;
+      const handoffArc = 4 * focusWeight * (1 - focusWeight);
+      const handoffSide = Math.sign(index - focus.timeline);
+      const displayX = x + (FOCUS_X - x) * focusWeight - handoffArc * 42;
+      const displayY = y + (FOCUS_Y - y) * focusWeight + handoffSide * handoffArc * 82;
+      const scale = (orbitScale + (1.11 - orbitScale) * focusWeight) * (1 - recedeWeight * 0.075);
+      const opacity = (orbitOpacity + (1 - orbitOpacity) * focusWeight) * (1 - recedeWeight * 0.62);
 
       const element = moduleRefs.current[mod.id];
       if (element) {
-        element.style.left = `${cx + x}px`;
-        element.style.top = `${cy + y}px`;
+        element.style.left = `${cx + displayX}px`;
+        element.style.top = `${cy + displayY}px`;
         element.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(4)})`;
         element.style.opacity = opacity.toFixed(4);
-        element.style.zIndex = state.dragging ? 30 : String(Math.round(depth * 8) + 4);
+        element.style.zIndex = state.dragging || focusWeight > 0.5
+          ? 30
+          : String(Math.round(depth * 8) + 4);
         element.classList.toggle('orbit-module-wrap--stabilized', active);
         element.classList.toggle('orbit-module-wrap--dragging', state.dragging);
+        element.classList.toggle('orbit-module-wrap--focused', focusWeight > 0.5);
       }
 
       const line = lineRefs.current[mod.id];
       if (line) {
         line.setAttribute('x1', cx);
         line.setAttribute('y1', cy - 30);
-        line.setAttribute('x2', cx + x);
-        line.setAttribute('y2', cy + y);
-        line.setAttribute('opacity', (active ? 0.31 : 0.12 + 0.09 * depth).toFixed(3));
+        line.setAttribute('x2', cx + displayX);
+        line.setAttribute('y2', cy + displayY);
+        const lineOpacity = (active ? 0.31 : 0.12 + 0.09 * depth)
+          * (1 - recedeWeight * 0.72)
+          + focusWeight * 0.12;
+        line.setAttribute('opacity', lineOpacity.toFixed(3));
       }
 
       // Each module owns a faint guide ellipse. During a drag it previews the
@@ -209,10 +256,28 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
         ring.setAttribute('cy', cy);
         ring.setAttribute('rx', guideRadius.toFixed(2));
         ring.setAttribute('ry', (guideRadius * compression).toFixed(2));
-        ring.setAttribute('opacity', state.dragging ? '0.2' : state.adapting ? '0.12' : '0.055');
+        const ringOpacity = (state.dragging ? 0.2 : state.adapting ? 0.12 : 0.055)
+          * (1 - focus.engagement * 0.72);
+        ring.setAttribute('opacity', ringOpacity.toFixed(3));
         ring.classList.toggle('orbit-ring--active', state.dragging || state.adapting);
       }
+
+      const preview = previewRefs.current[mod.id];
+      if (preview) {
+        // Preview copy yields briefly at the midpoint so two project names
+        // never become visually superimposed during a module crossfade.
+        const previewWeight = smoothstep(0.5, 0.92, focusWeight);
+        preview.style.opacity = previewWeight.toFixed(4);
+        preview.style.transform = `translateY(calc(-50% + ${(1 - previewWeight) * 14}px)) scale(${(0.985 + previewWeight * 0.015).toFixed(4)})`;
+        preview.style.visibility = previewWeight > 0.01 ? 'visible' : 'hidden';
+        preview.setAttribute('aria-hidden', previewWeight > 0.5 ? 'false' : 'true');
+      }
     });
+
+    if (scrollCueRef.current) {
+      const cueOpacity = 1 - smoothstep(0.015, 0.08, focusProgressRef.current.current);
+      scrollCueRef.current.style.opacity = cueOpacity.toFixed(3);
+    }
   }, [getPosition, isStabilized]);
 
   const updateGeometry = useCallback(() => {
@@ -235,6 +300,23 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   }, [mobile, updateGeometry]);
 
   useEffect(() => {
+    if (guided) return;
+    focusProgressRef.current.current = 0;
+    focusProgressRef.current.target = 0;
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    applyFrame();
+  }, [applyFrame, guided]);
+
+  const handleScroll = useCallback((event) => {
+    if (!guided) return;
+    const element = event.currentTarget;
+    const scrollRange = element.scrollHeight - element.clientHeight;
+    focusProgressRef.current.target = scrollRange > 0
+      ? clamp(element.scrollTop / scrollRange, 0, 1)
+      : 0;
+  }, [guided]);
+
+  useEffect(() => {
     if (mobile || reducedMotion) return undefined;
     let lastTime = 0;
 
@@ -242,6 +324,11 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
       if (!lastTime) lastTime = timestamp;
       const delta = Math.min((timestamp - lastTime) / 1000, 0.05);
       lastTime = timestamp;
+
+      const focusEase = 1 - Math.exp(-delta * 5.5);
+      focusProgressRef.current.current += (
+        focusProgressRef.current.target - focusProgressRef.current.current
+      ) * focusEase;
 
       MODULES.forEach((mod) => {
         const state = statesRef.current[mod.id];
@@ -330,7 +417,13 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   }, [applyFrame]);
 
   const handlePointerDown = useCallback((id, event) => {
-    if (mobile || reducedMotion || event.pointerType === 'touch' || event.button !== 0) return;
+    if (
+      mobile
+      || reducedMotion
+      || focusProgressRef.current.current > 0.025
+      || event.pointerType === 'touch'
+      || event.button !== 0
+    ) return;
     const state = statesRef.current[id];
     state.dragging = true;
     pointerRef.current = {
@@ -454,54 +547,86 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   }
 
   return (
-    <div className={`home-canvas home-canvas--${activeView}`} aria-label="Home">
-      <div className="home-canvas__bg" style={{ backgroundImage: `url(${bgDesktop})` }} aria-hidden="true" />
-      <div className="home-canvas__bg-overlay" aria-hidden="true" />
-      <div className="home-canvas__geometry" aria-hidden="true" />
+    <div
+      className={`home-canvas home-canvas--${activeView}${guided ? ' home-canvas--guided' : ''}`}
+      aria-label={guided ? 'Home — scroll to explore work' : 'Home'}
+      ref={scrollRef}
+      onScroll={handleScroll}
+      tabIndex={guided ? 0 : undefined}
+    >
+      <div className="home-canvas__scroll-space">
+        <div className="home-canvas__stage">
+          <div className="home-canvas__bg" style={{ backgroundImage: `url(${bgDesktop})` }} aria-hidden="true" />
+          <div className="home-canvas__bg-overlay" aria-hidden="true" />
+          <div className="home-canvas__geometry" aria-hidden="true" />
 
-      <div className="home-canvas__orbit" ref={orbitRef}>
-        <svg className="orbit-rings" aria-hidden="true">
-          {MODULES.map((mod, index) => (
-            <ellipse
-              key={mod.id}
-              ref={(element) => { if (element) ringRefs.current[mod.id] = element; }}
-              cx="0" cy="0" rx="0" ry="0"
-              className={`orbit-ring orbit-ring--${(index % 3) + 1}`}
-            />
-          ))}
-        </svg>
+          <div className="home-canvas__orbit" ref={orbitRef}>
+            <svg className="orbit-rings" aria-hidden="true">
+              {MODULES.map((mod, index) => (
+                <ellipse
+                  key={mod.id}
+                  ref={(element) => { if (element) ringRefs.current[mod.id] = element; }}
+                  cx="0" cy="0" rx="0" ry="0"
+                  className={`orbit-ring orbit-ring--${(index % 3) + 1}`}
+                />
+              ))}
+            </svg>
 
-        <svg className="orbit-lines" aria-hidden="true">
-          {MODULES.map((mod) => (
-            <line
-              key={mod.id}
-              ref={(element) => { if (element) lineRefs.current[mod.id] = element; }}
-              x1="0" y1="0" x2="0" y2="0"
-            />
-          ))}
-        </svg>
+            <svg className="orbit-lines" aria-hidden="true">
+              {MODULES.map((mod) => (
+                <line
+                  key={mod.id}
+                  ref={(element) => { if (element) lineRefs.current[mod.id] = element; }}
+                  x1="0" y1="0" x2="0" y2="0"
+                />
+              ))}
+            </svg>
 
-        <div className="core-ambient" aria-hidden="true" />
-        <div className="home-canvas__core">
-          <CoreGlyph size={88} pulse className="home-core-glyph" />
-          <div className="home-canvas__identity">
-            <h1 className="home-canvas__name">Mahdiar Mazinani</h1>
-            <p className="home-canvas__subtitle">Computer Studies · Vancouver</p>
+            <div className="core-ambient" aria-hidden="true" />
+            <div className="home-canvas__core">
+              <CoreGlyph size={88} pulse className="home-core-glyph" />
+              <div className="home-canvas__identity">
+                <h1 className="home-canvas__name">Mahdiar Mazinani</h1>
+                <p className="home-canvas__subtitle">Computer Studies · Vancouver</p>
+              </div>
+            </div>
+
+            {MODULES.map((mod) => (
+              <div
+                key={mod.id}
+                className="orbit-module-wrap"
+                ref={(element) => { if (element) moduleRefs.current[mod.id] = element; }}
+              >
+                <WorkspaceModule {...moduleProps(mod)} />
+              </div>
+            ))}
           </div>
+
+          <div className="focus-preview-layer" aria-label="Active project preview">
+            {MODULES.map((mod, index) => (
+              <article
+                key={mod.id}
+                className="focus-preview"
+                ref={(element) => { if (element) previewRefs.current[mod.id] = element; }}
+                aria-hidden="true"
+              >
+                <span className="focus-preview__index">0{index + 1}</span>
+                <h2 className="focus-preview__title">{mod.title}</h2>
+                <p className="focus-preview__type">{mod.type}</p>
+                <p className="focus-preview__description">{mod.description}</p>
+              </article>
+            ))}
+          </div>
+
+          {guided && (
+            <p className="focus-scroll-cue" ref={scrollCueRef} aria-hidden="true">
+              Scroll to explore work
+            </p>
+          )}
+
+          {selected && <p className="home-canvas__status" role="status" aria-live="polite">{selected.title} workspace selected</p>}
         </div>
-
-        {MODULES.map((mod) => (
-          <div
-            key={mod.id}
-            className="orbit-module-wrap"
-            ref={(element) => { if (element) moduleRefs.current[mod.id] = element; }}
-          >
-            <WorkspaceModule {...moduleProps(mod)} />
-          </div>
-        ))}
       </div>
-
-      {selected && <p className="home-canvas__status" role="status" aria-live="polite">{selected.title} workspace selected</p>}
     </div>
   );
 }
