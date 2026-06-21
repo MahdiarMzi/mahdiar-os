@@ -11,6 +11,11 @@ const FOCUS_X = -235;
 const FOCUS_Y = -28;
 const MOBILE_QUERY = '(max-width: 768px)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+const FOCUS_ENTRY = 0.2;
+const FOCUS_HOLD = 0.6;
+const FOCUS_EXIT = 0.2;
+const FOCUS_SEGMENT = FOCUS_ENTRY + FOCUS_HOLD + FOCUS_EXIT;
+const FOCUS_STEP = FOCUS_ENTRY + FOCUS_HOLD;
 
 const MODULES = [
   {
@@ -127,12 +132,27 @@ const smoothstep = (start, end, value) => {
 };
 
 const getFocusState = (progress) => {
-  const engagement = smoothstep(0.025, 0.13, progress);
-  const timeline = clamp((progress - 0.13) / 0.72, 0, 1) * (MODULES.length - 1);
+  // Adjacent segments share their 20% transition window. This gives every
+  // project a 20% entry, 60% stable reading hold, and 20% exit while keeping
+  // the outgoing and incoming weights complementary through each handoff.
+  const timelineLength = (MODULES.length - 1) * FOCUS_STEP + FOCUS_SEGMENT;
+  const phase = clamp(progress, 0, 1) * timelineLength;
   const weights = MODULES.map((_, index) => {
-    const proximity = clamp(1 - Math.abs(timeline - index), 0, 1);
-    return smoothstep(0, 1, proximity) * engagement;
+    const start = index * FOCUS_STEP;
+    const enterEnd = start + FOCUS_ENTRY;
+    const holdEnd = enterEnd + FOCUS_HOLD;
+    const end = holdEnd + FOCUS_EXIT;
+    const entry = smoothstep(start, enterEnd, phase);
+    const exit = 1 - smoothstep(holdEnd, end, phase);
+    return entry * exit;
   });
+
+  const engagement = Math.max(...weights);
+  const weightTotal = weights.reduce((total, weight) => total + weight, 0);
+  const timeline = weightTotal > 0
+    ? weights.reduce((total, weight, index) => total + weight * index, 0) / weightTotal
+    : progress < 0.5 ? 0 : MODULES.length - 1;
+
   return { engagement, timeline, weights };
 };
 
@@ -456,7 +476,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
       const delta = Math.min((timestamp - lastTime) / 1000, 0.05);
       lastTime = timestamp;
 
-      const focusEase = 1 - Math.exp(-delta * 5.5);
+      const focusEase = 1 - Math.exp(-delta * 3.8);
       focusProgressRef.current.current += (
         focusProgressRef.current.target - focusProgressRef.current.current
       ) * focusEase;
