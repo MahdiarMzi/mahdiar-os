@@ -1,0 +1,665 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+
+/* ─── TOKENS ─────────────────────────────────────── */
+:root {
+  --bg-void:     #0b0b0e;
+  --bg-surface:  #151519;
+  --bg-elevated: #1f1f24;
+  --bg-overlay:  #222226;
+
+  --text-primary:   #F2F2F0;
+  --text-secondary: #a0a0a6;
+  --text-tertiary:  #686870;
+  --text-disabled:  #48484f;
+
+  --accent:     #5E6AD2;
+  --accent-dim: rgba(94, 106, 210, 0.15);
+
+  --status-available: #3ECF8E;
+  --status-busy:      #E8A838;
+
+  --border-subtle:  rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+  --border-focus:   rgba(94, 106, 210, 0.40);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --duration-micro:       120ms;
+  --duration-fast:        220ms;
+  --duration-standard:    320ms;
+  --duration-deliberate:  480ms;
+  --duration-boot:        800ms;
+
+  --bar-height:  44px;
+  --dock-height: 80px;
+}
+
+/* ─── RESET ──────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #111116;
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+/* ─── KEYFRAMES ──────────────────────────────────── */
+@keyframes boot-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes boot-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes surface-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes glyph-pulse {
+  0%, 100% { opacity: 1;    }
+  50%       { opacity: 0.62; }
+}
+
+/* ─── OS SHELL ───────────────────────────────────── */
+.os-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #17171d 0%, #101014 58%, #141419 100%);
+  overflow: hidden;
+}
+
+/* ─── BOOT SCREEN ────────────────────────────────── */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg-void);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: boot-in var(--duration-deliberate) ease-out both;
+}
+
+.boot-screen--exiting {
+  animation: boot-out var(--duration-standard) ease-in both;
+}
+
+.boot-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.boot-glyph {
+  color: var(--text-tertiary);
+}
+
+.boot-label {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+}
+
+/* ─── CORE GLYPH ─────────────────────────────────── */
+.core-glyph {
+  display: block;
+  flex-shrink: 0;
+}
+
+.core-glyph--pulse {
+  animation: glyph-pulse 5.5s ease-in-out infinite;
+}
+
+/* ─── SYSTEM BAR ─────────────────────────────────── */
+.system-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--bar-height);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(16, 16, 20, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.system-bar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.system-bar__glyph {
+  color: #888890;
+}
+
+.system-bar__name {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: #85858d;
+}
+
+.system-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.system-bar__status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-available);
+  flex-shrink: 0;
+}
+
+.system-bar__clock {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* ─── HOME CANVAS ────────────────────────────────── */
+.home-canvas {
+  position: absolute;
+  inset: 0;
+  padding-top: var(--bar-height);
+  padding-bottom: var(--dock-height);
+  animation: surface-in var(--duration-standard) ease-out both;
+}
+
+/* Background image layer */
+.home-canvas__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.64;
+  filter: saturate(0.8) contrast(1.04) brightness(1.06);
+  pointer-events: none;
+}
+
+/* Vignette: lighter than before so background reads through more */
+.home-canvas__bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 42% 48% at 50% 48%, rgba(31, 32, 44, 0.08) 0%, transparent 68%),
+    radial-gradient(ellipse 76% 72% at 50% 48%, transparent 30%, rgba(12, 12, 16, 0.26) 70%, rgba(10, 10, 13, 0.6) 100%),
+    linear-gradient(180deg, rgba(13, 13, 17, 0.12), rgba(13, 13, 17, 0.28));
+  pointer-events: none;
+}
+
+.home-canvas__geometry {
+  position: absolute;
+  inset: var(--bar-height) 0 var(--dock-height);
+  pointer-events: none;
+  opacity: 0.32;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.035) 50%, transparent calc(50% + 1px)),
+    linear-gradient(180deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.026) 50%, transparent calc(50% + 1px));
+  mask-image: radial-gradient(ellipse 48% 58% at center, black, transparent 76%);
+  -webkit-mask-image: radial-gradient(ellipse 48% 58% at center, black, transparent 76%);
+}
+
+/* Orbit container — creates a stacking context (z-index: 0) that contains
+   all module z-index values so they don't leak above system bar / dock */
+.home-canvas__orbit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* ── Core ── */
+.home-canvas__core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  pointer-events: none;
+  z-index: 20; /* always above orbiting modules */
+}
+
+/* Glyph center is ~35px above the core group's geometric center */
+.core-ambient {
+  position: absolute;
+  top: calc(50% - 35px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 430px;
+  height: 330px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(118, 125, 185, 0.2) 0%,
+    rgba(100, 108, 166, 0.09) 34%,
+    rgba(91, 96, 137, 0.035) 58%,
+    transparent 74%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.home-core-glyph {
+  color: #fafaf8;
+  filter: drop-shadow(0 0 16px rgba(194, 198, 224, 0.16));
+}
+
+.home-canvas__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.home-canvas__name {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.home-canvas__subtitle {
+  font-size: 12px;
+  font-weight: 400;
+  color: #85858d;
+  letter-spacing: 0.04em;
+}
+
+.home-canvas__status {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text-disabled);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  z-index: 1; /* above orbit stacking context */
+  animation: surface-in var(--duration-fast) ease-out both;
+}
+
+/* ─── ORBIT: guide rings SVG ──────────────────────── */
+.orbit-rings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.orbit-ring {
+  fill: none;
+  stroke: rgba(236, 236, 240, 0.12);
+  stroke-width: 1;
+  stroke-dasharray: 2 11;
+  transition: opacity 320ms ease, stroke 320ms ease;
+}
+
+.orbit-ring--2 {
+  stroke: rgba(236, 236, 240, 0.09);
+  stroke-dasharray: 1 9;
+}
+
+.orbit-ring--3 {
+  stroke: rgba(236, 236, 240, 0.075);
+  stroke-dasharray: 3 13;
+}
+
+.orbit-ring--active {
+  stroke: rgba(236, 236, 240, 0.18);
+}
+
+/* ─── ORBIT: connection lines SVG ─────────────────── */
+.orbit-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.orbit-lines line {
+  stroke: rgba(230, 231, 239, 0.78);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 1 7;
+}
+
+/* ─── ORBIT: module wrappers (positioned by JS) ───── */
+.orbit-module-wrap {
+  position: absolute;
+  will-change: left, top, transform;
+  transition: opacity 220ms ease;
+}
+
+.orbit-module-wrap--stabilized {
+  opacity: 1 !important;
+}
+
+.orbit-module-wrap--dragging {
+  cursor: grabbing;
+}
+
+.orbit-module-wrap--dragging .workspace-module {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(145deg, rgba(51, 51, 59, 0.97), rgba(33, 33, 40, 0.96));
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11);
+}
+
+/* ─── WORKSPACE MODULES ──────────────────────────── */
+.workspace-module {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 20px;
+  width: 192px;
+  background: linear-gradient(145deg, rgba(39, 39, 46, 0.9), rgba(27, 27, 33, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.24),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition:
+    transform      var(--duration-fast) ease,
+    border-color   var(--duration-fast) ease,
+    background     var(--duration-fast) ease,
+    box-shadow     var(--duration-fast) ease;
+}
+
+.workspace-module:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.27);
+  background: linear-gradient(145deg, rgba(48, 48, 56, 0.95), rgba(31, 31, 38, 0.94));
+  box-shadow:
+    0 15px 34px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.workspace-module:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow:
+    0 0 0 3px rgba(94, 106, 210, 0.2),
+    0 14px 32px rgba(0, 0, 0, 0.3);
+}
+
+.workspace-module--selected {
+  border-color: rgba(146, 154, 220, 0.38);
+  background: linear-gradient(145deg, rgba(42, 42, 51, 0.94), rgba(29, 29, 37, 0.92));
+}
+
+.workspace-module__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary); /* always readable regardless of orbit depth */
+  letter-spacing: -0.01em;
+}
+
+.workspace-module__meta {
+  font-size: 11px;
+  color: #919199;
+  letter-spacing: 0.03em;
+}
+
+/* Work view: signal that modules are the focus */
+.home-canvas--work .workspace-module {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(18, 18, 24, 0.88);
+}
+
+/* ─── DOCK ───────────────────────────────────────── */
+.dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+}
+
+.dock__inner {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  background: rgba(23, 23, 28, 0.79);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-xl);
+}
+
+.dock__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  min-height: 44px;
+  min-width: 64px;
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) ease;
+}
+
+.dock__item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dock__item:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.dock__label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #7c7c84;
+  letter-spacing: 0.03em;
+  transition: color var(--duration-fast) ease;
+  user-select: none;
+}
+
+.dock__item:hover .dock__label {
+  color: var(--text-secondary);
+}
+
+.dock__item--active .dock__label {
+  color: var(--text-primary);
+}
+
+.dock__indicator {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ─── SURFACE PLACEHOLDER ────────────────────────── */
+.surface-placeholder {
+  position: absolute;
+  inset: 0;
+  padding-top: var(--bar-height);
+  padding-bottom: var(--dock-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: surface-in var(--duration-standard) ease-out both;
+}
+
+.surface-placeholder__message {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-disabled);
+  letter-spacing: 0.08em;
+  padding: 24px 36px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: rgba(17, 17, 19, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ─── REDUCED MOTION ─────────────────────────────── */
+/* The JS orbit loop checks this via matchMedia and skips rAF entirely.
+   This rule handles any remaining CSS animations / transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── MOBILE ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --dock-height: 90px;
+  }
+
+  /* Allow vertical scroll within the canvas on mobile */
+  .home-canvas {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Static vertical list — no orbit on mobile */
+  .home-canvas__orbit--mobile {
+    position: relative;
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 32px;
+    gap: 12px;
+  }
+
+  /* Core sits at top of the mobile list */
+  .home-canvas__orbit--mobile .home-canvas__core {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-bottom: 12px;
+    pointer-events: auto;
+  }
+
+  /* Core ambient on mobile: position relative to the core element */
+  .home-canvas__orbit--mobile .core-ambient {
+    display: none; /* removed to keep mobile clean */
+  }
+
+  /* Modules fill full available width on mobile */
+  .home-canvas__orbit--mobile .workspace-module {
+    width: 100%;
+    max-width: 380px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .home-canvas__orbit--mobile .workspace-module:hover {
+    transform: none;
+  }
+
+  /* Orbit wrapper is not used on mobile — but guard just in case */
+  .orbit-module-wrap {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .home-canvas__status {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .system-bar__name {
+    display: none;
+  }
+
+  .dock__item {
+    padding: 8px 12px;
+    min-width: 56px;
+  }
+
+  .dock__label {
+    font-size: 11px;
+  }
+}
