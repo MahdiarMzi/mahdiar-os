@@ -225,7 +225,7 @@ button {
 }
 
 .home-canvas__stage {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .home-canvas--guided {
@@ -255,6 +255,65 @@ button {
 
 .home-canvas__stage .home-canvas__geometry {
   inset: 0;
+}
+
+/* Extends the spatial field through the dock zone without changing the orbit's
+   coordinate system or adding another animated layer. */
+.canvas-depth-field {
+  position: absolute;
+  inset: 0 0 calc(-1 * var(--dock-height));
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 44% 34% at 50% 84%, rgba(104, 110, 159, 0.032), transparent 72%),
+    linear-gradient(180deg, transparent 63%, rgba(18, 18, 24, 0.08) 80%, rgba(17, 17, 22, 0.22) 100%);
+}
+
+.canvas-depth-field svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.canvas-depth-field ellipse,
+.canvas-depth-field line,
+.canvas-depth-field circle {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.canvas-depth-field__rings ellipse {
+  stroke: rgba(229, 230, 238, 0.034);
+  stroke-width: 1;
+}
+
+.canvas-depth-field__rings ellipse:nth-child(2),
+.canvas-depth-field__rings ellipse:nth-child(4) {
+  stroke-dasharray: 2 14;
+}
+
+.canvas-depth-field__alignment line {
+  stroke: rgba(229, 230, 238, 0.03);
+  stroke-width: 1;
+}
+
+.canvas-depth-field__alignment line:nth-child(2),
+.canvas-depth-field__alignment line:nth-child(3) {
+  stroke-dasharray: 1 16;
+}
+
+.canvas-depth-field__distance ellipse {
+  stroke: rgba(229, 230, 238, 0.052);
+  stroke-width: 1;
+}
+
+.canvas-depth-field__distance ellipse:nth-child(2) {
+  stroke-dasharray: 3 18;
+}
+
+.canvas-depth-field__anchors circle {
+  fill: rgba(176, 181, 220, 0.12);
 }
 
 /* Background image layer */

@@ -559,6 +559,33 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
           <div className="home-canvas__bg" style={{ backgroundImage: `url(${bgDesktop})` }} aria-hidden="true" />
           <div className="home-canvas__bg-overlay" aria-hidden="true" />
           <div className="home-canvas__geometry" aria-hidden="true" />
+          <div className="canvas-depth-field" aria-hidden="true">
+            <svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
+              <g className="canvas-depth-field__rings">
+                <ellipse cx="500" cy="450" rx="350" ry="218" />
+                <ellipse cx="500" cy="450" rx="475" ry="310" />
+                <ellipse cx="500" cy="450" rx="625" ry="410" />
+                <ellipse cx="500" cy="450" rx="790" ry="520" />
+              </g>
+              <g className="canvas-depth-field__alignment">
+                <line x1="500" y1="450" x2="500" y2="1000" />
+                <line x1="500" y1="450" x2="414" y2="1000" />
+                <line x1="500" y1="450" x2="586" y2="1000" />
+                <line x1="188" y1="760" x2="812" y2="760" />
+              </g>
+              <g className="canvas-depth-field__distance">
+                <ellipse cx="500" cy="990" rx="210" ry="48" />
+                <ellipse cx="500" cy="1010" rx="365" ry="88" />
+                <ellipse cx="500" cy="1030" rx="545" ry="132" />
+              </g>
+              <g className="canvas-depth-field__anchors">
+                <circle cx="500" cy="760" r="1.6" />
+                <circle cx="414" cy="1000" r="1.4" />
+                <circle cx="500" cy="990" r="1.8" />
+                <circle cx="586" cy="1000" r="1.4" />
+              </g>
+            </svg>
+          </div>
 
           <div className="home-canvas__orbit" ref={orbitRef}>
             <svg className="orbit-rings" aria-hidden="true">
