@@ -714,78 +714,94 @@ button {
 }
 
 .project-visual--spendly {
+  display: grid;
+  place-items: center;
+  isolation: isolate;
   background:
-    radial-gradient(circle at 66% 46%, rgba(102, 113, 188, 0.1), transparent 30%),
+    radial-gradient(circle at 50% 46%, rgba(143, 151, 205, 0.11), transparent 34%),
+    linear-gradient(105deg, rgba(255, 255, 255, 0.018), transparent 48%),
     rgba(8, 8, 11, 0.34);
 }
 
-.project-visual__phone {
+.project-focus-panel .project-visual--spendly {
+  height: 184px;
+}
+
+.project-visual--spendly::before,
+.project-visual--spendly::after {
   position: absolute;
-  top: 13px;
-  left: 50%;
-  width: 58px;
-  height: 104px;
-  padding: 14px 8px 8px;
-  transform: translateX(-50%);
-  border: 1px solid rgba(255, 255, 255, 0.26);
-  border-radius: 13px;
-  background: rgba(28, 29, 38, 0.8);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
-}
-
-.project-visual__phone-bar {
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  width: 17px;
-  height: 2px;
-  transform: translateX(-50%);
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.project-visual__balance,
-.project-visual__phone-row {
-  display: block;
-  height: 4px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.project-visual__balance { width: 29px; height: 6px; }
-.project-visual__phone-row { width: 40px; margin-top: 8px; }
-.project-visual__phone-row--short { width: 28px; }
-
-.project-visual__chart {
-  display: flex;
-  align-items: end;
-  gap: 3px;
-  height: 37px;
-  margin-top: 9px;
-  padding: 0 3px 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.project-visual__chart i {
-  width: 4px;
-  border-radius: 3px 3px 0 0;
-  background: rgba(130, 140, 212, 0.55);
-}
-
-.project-visual__chart i:nth-child(1) { height: 10px; }
-.project-visual__chart i:nth-child(2) { height: 17px; }
-.project-visual__chart i:nth-child(3) { height: 13px; }
-.project-visual__chart i:nth-child(4) { height: 24px; }
-.project-visual__chart i:nth-child(5) { height: 20px; }
-
-.project-visual__orbit-mark {
-  position: absolute;
-  border: 1px solid rgba(132, 141, 207, 0.11);
+  z-index: 0;
+  width: 184px;
+  height: 72px;
+  border: 1px solid rgba(221, 224, 240, 0.055);
   border-radius: 50%;
+  content: '';
+  transform: rotate(-7deg);
 }
 
-.project-visual__orbit-mark--one { inset: 21px 72px; }
-.project-visual__orbit-mark--two { inset: 37px 112px; }
+.project-visual--spendly::after {
+  width: 252px;
+  height: 102px;
+  border-color: rgba(221, 224, 240, 0.032);
+  transform: rotate(9deg);
+}
+
+.project-visual__spendly-aura {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  width: 126px;
+  height: 126px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(163, 168, 210, 0.1), transparent 68%);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.project-visual__iphone {
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  z-index: 2;
+  aspect-ratio: 1260 / 2736;
+  padding: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 228, 239, 0.24);
+  border-radius: 18px;
+  background: #09090b;
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(255, 255, 255, 0.025) inset;
+}
+
+.project-visual__iphone::after {
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  content: '';
+  pointer-events: none;
+}
+
+.project-visual__iphone img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  object-fit: contain;
+}
+
+.project-visual__spendly-caption {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  z-index: 2;
+  color: rgba(226, 228, 238, 0.43);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
 
 .project-visual--shamsa {
   padding: 12px 20px;
@@ -1886,6 +1902,10 @@ button {
 
   .project-focus-panel--mobile .project-visual {
     height: 150px;
+  }
+
+  .project-focus-panel--mobile .project-visual--spendly {
+    height: 210px;
   }
 
   .project-focus-panel--mobile .project-focus-panel__meta {

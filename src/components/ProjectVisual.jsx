@@ -1,16 +1,14 @@
+import spendlyStats from '../assets/projects/spendly/spendly-04-stats.png';
+
 function ProjectVisual({ projectId }) {
   if (projectId === 'spendly') {
     return (
       <div className="project-visual project-visual--spendly" aria-hidden="true">
-        <div className="project-visual__phone">
-          <span className="project-visual__phone-bar" />
-          <span className="project-visual__balance" />
-          <span className="project-visual__chart"><i /><i /><i /><i /><i /></span>
-          <span className="project-visual__phone-row" />
-          <span className="project-visual__phone-row project-visual__phone-row--short" />
+        <div className="project-visual__spendly-aura" />
+        <div className="project-visual__iphone">
+          <img src={spendlyStats} alt="" />
         </div>
-        <div className="project-visual__orbit-mark project-visual__orbit-mark--one" />
-        <div className="project-visual__orbit-mark project-visual__orbit-mark--two" />
+        <span className="project-visual__spendly-caption">Spendly · iOS</span>
       </div>
     );
   }
