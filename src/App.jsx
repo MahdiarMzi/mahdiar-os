@@ -4,6 +4,7 @@ import SystemBar from './components/SystemBar';
 import HomeCanvas from './components/HomeCanvas';
 import Dock from './components/Dock';
 import SurfacePlaceholder from './components/SurfacePlaceholder';
+import WorkspaceDetail from './components/WorkspaceDetail';
 import './styles/global.css';
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
       setSelectedWorkspace(null);
     }
   }, []);
+
+  const handleCloseWorkspace = useCallback(() => setSelectedWorkspace(null), []);
 
   const showCanvas = activeView === 'home' || activeView === 'work';
 
@@ -39,6 +42,10 @@ function App() {
           )}
 
           {!showCanvas && <SurfacePlaceholder view={activeView} />}
+
+          {showCanvas && selectedWorkspace && (
+            <WorkspaceDetail projectId={selectedWorkspace} onClose={handleCloseWorkspace} />
+          )}
 
           <Dock activeView={activeView} onNavigate={handleNavigate} />
         </div>

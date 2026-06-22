@@ -1,6 +1,7 @@
 import { useRef, useEffect, useLayoutEffect, useState, useCallback } from 'react';
 import CoreGlyph from './CoreGlyph';
 import WorkspaceModule from './WorkspaceModule';
+import ProjectVisual from './ProjectVisual';
 import bgDesktop from '../assets/backgrounds/os-bg-desktop.webp';
 import bgMobile from '../assets/backgrounds/os-bg-mobile.webp';
 
@@ -158,63 +159,7 @@ const getFocusState = (progress) => {
 
 const MODULE_BY_ID = Object.fromEntries(MODULES.map((mod) => [mod.id, mod]));
 
-function ProjectVisual({ projectId }) {
-  if (projectId === 'spendly') {
-    return (
-      <div className="project-visual project-visual--spendly" aria-hidden="true">
-        <div className="project-visual__phone">
-          <span className="project-visual__phone-bar" />
-          <span className="project-visual__balance" />
-          <span className="project-visual__chart"><i /><i /><i /><i /><i /></span>
-          <span className="project-visual__phone-row" />
-          <span className="project-visual__phone-row project-visual__phone-row--short" />
-        </div>
-        <div className="project-visual__orbit-mark project-visual__orbit-mark--one" />
-        <div className="project-visual__orbit-mark project-visual__orbit-mark--two" />
-      </div>
-    );
-  }
-
-  if (projectId === 'shamsa') {
-    return (
-      <div className="project-visual project-visual--shamsa" aria-hidden="true">
-        <div className="project-visual__browser">
-          <div className="project-visual__browser-bar"><i /><i /><i /><span /></div>
-          <div className="project-visual__web-hero"><span /><span /></div>
-          <div className="project-visual__web-grid"><i /><i /><i /></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (projectId === 'mahshid') {
-    return (
-      <div className="project-visual project-visual--mahshid" aria-hidden="true">
-        <div className="project-visual__editorial-image"><span /></div>
-        <div className="project-visual__editorial-copy">
-          <i />
-          <span />
-          <span />
-          <span className="project-visual__editorial-rule" />
-        </div>
-        <b>COLLECTION / 01</b>
-      </div>
-    );
-  }
-
-  return (
-    <div className="project-visual project-visual--tracker" aria-hidden="true">
-      <div className="project-visual__dashboard-bar"><span /><i /><i /></div>
-      <div className="project-visual__kanban">
-        <div><span /><i /><i /></div>
-        <div><span /><i /></div>
-        <div><span /><i /><i /></div>
-      </div>
-    </div>
-  );
-}
-
-function ProjectFocusPanel({ project, index, panelRef, mobile = false }) {
+function ProjectFocusPanel({ project, index, panelRef, mobile = false, onOpenDetail }) {
   const title = project.panelTitle || project.title;
 
   return (
@@ -222,6 +167,8 @@ function ProjectFocusPanel({ project, index, panelRef, mobile = false }) {
       className={`project-focus-panel${mobile ? ' project-focus-panel--mobile' : ''}`}
       ref={panelRef}
       aria-hidden={mobile ? undefined : 'true'}
+      onClick={onOpenDetail ? () => onOpenDetail(project.id) : undefined}
+      style={onOpenDetail ? { cursor: 'pointer' } : undefined}
     >
       <header className="project-focus-panel__header">
         <span className="project-focus-panel__index">0{index + 1}</span>
@@ -251,12 +198,12 @@ function ProjectFocusPanel({ project, index, panelRef, mobile = false }) {
 
       <div className="project-focus-panel__actions">
         {project.liveUrl && (
-          <a href={project.liveUrl} target="_blank" rel="noreferrer">
+          <a href={project.liveUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
             Live Site <span aria-hidden="true">↗</span>
           </a>
         )}
         {project.githubUrl && (
-          <a href={project.githubUrl} target="_blank" rel="noreferrer">
+          <a href={project.githubUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
             GitHub <span aria-hidden="true">↗</span>
           </a>
         )}
@@ -654,10 +601,8 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
       suppressClickRef.current = null;
       return;
     }
-    onSelectWorkspace(selectedWorkspace === id ? null : id);
-  }, [onSelectWorkspace, selectedWorkspace]);
-
-  const selected = MODULES.find((mod) => mod.id === selectedWorkspace);
+    onSelectWorkspace(id);
+  }, [onSelectWorkspace]);
 
   const moduleProps = (mod) => ({
     ...mod,
@@ -691,12 +636,16 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
           </div>
           <div className="mobile-project-sequence">
             {MODULES.map((mod, index) => (
-              <ProjectFocusPanel key={mod.id} project={mod} index={index} mobile />
+              <ProjectFocusPanel
+                key={mod.id}
+                project={mod}
+                index={index}
+                mobile
+                onOpenDetail={onSelectWorkspace}
+              />
             ))}
           </div>
         </div>
-
-        {selected && <p className="home-canvas__status" role="status" aria-live="polite">{selected.title} workspace selected</p>}
       </div>
     );
   }
@@ -791,6 +740,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
                 project={mod}
                 index={index}
                 panelRef={(element) => { if (element) previewRefs.current[mod.id] = element; }}
+                onOpenDetail={onSelectWorkspace}
               />
             ))}
           </div>
@@ -800,8 +750,6 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
               Scroll to explore work
             </p>
           )}
-
-          {selected && <p className="home-canvas__status" role="status" aria-live="polite">{selected.title} workspace selected</p>}
         </div>
       </div>
     </div>
