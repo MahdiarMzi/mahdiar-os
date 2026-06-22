@@ -244,9 +244,9 @@ button {
 }
 
 .home-canvas--guided .home-canvas__scroll-space {
-  /* Four overlapping cinematic segments. The resulting native travel range
-     gives each project roughly 160–180vh without snapping or scroll capture. */
-  height: calc(100% + 590vh);
+  /* Balanced native travel: enough room to read each project without making a
+     normal trackpad gesture feel trapped inside one section. */
+  height: calc(100% + 440vh);
 }
 
 .home-canvas--guided .home-canvas__stage {

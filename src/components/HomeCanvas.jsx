@@ -12,11 +12,13 @@ const FOCUS_X = -235;
 const FOCUS_Y = -28;
 const MOBILE_QUERY = '(max-width: 768px)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
-const FOCUS_ENTRY = 0.25;
-const FOCUS_HOLD = 0.5;
-const FOCUS_EXIT = 0.25;
+const FOCUS_ENTRY = 0.22;
+const FOCUS_HOLD = 0.46;
+const FOCUS_EXIT = 0.32;
 const FOCUS_SEGMENT = FOCUS_ENTRY + FOCUS_HOLD + FOCUS_EXIT;
 const FOCUS_STEP = FOCUS_ENTRY + FOCUS_HOLD;
+const SCROLL_ASSIST_DELAY = 150;
+const SCROLL_ASSIST_RANGE = 0.04;
 
 const MODULES = [
   {
@@ -118,6 +120,11 @@ const MODULES = [
   },
 ];
 
+const FOCUS_TIMELINE_LENGTH = (MODULES.length - 1) * FOCUS_STEP + FOCUS_SEGMENT;
+const FOCUS_CENTERS = MODULES.map((_, index) => (
+  (index * FOCUS_STEP + FOCUS_ENTRY + FOCUS_HOLD / 2) / FOCUS_TIMELINE_LENGTH
+));
+
 const normalizeAngle = (angle) => {
   let next = angle % TAU;
   if (next > Math.PI) next -= TAU;
@@ -138,11 +145,9 @@ const smootherstep = (start, end, value) => {
 };
 
 const getFocusState = (progress) => {
-  // Adjacent segments share their 25% transition window. This gives every
-  // project a 25% entry, 50% stable reading hold, and 25% exit while keeping
-  // the outgoing and incoming weights complementary through each handoff.
-  const timelineLength = (MODULES.length - 1) * FOCUS_STEP + FOCUS_SEGMENT;
-  const phase = clamp(progress, 0, 1) * timelineLength;
+  // Adjacent segments overlap through a longer exit than entry, allowing the
+  // outgoing project to remain present while the next project resolves.
+  const phase = clamp(progress, 0, 1) * FOCUS_TIMELINE_LENGTH;
   const weights = MODULES.map((_, index) => {
     const start = index * FOCUS_STEP;
     const enterEnd = start + FOCUS_ENTRY;
@@ -238,6 +243,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   const suppressClickRef = useRef(null);
   const pointerRef = useRef(null);
   const focusProgressRef = useRef({ current: 0, target: 0, direction: 1 });
+  const scrollAssistRef = useRef({ timer: null });
   const statesRef = useRef(Object.fromEntries(MODULES.map((mod) => [mod.id, {
     angle: mod.baseAngle,
     targetAngle: mod.baseAngle,
@@ -412,6 +418,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
 
   useEffect(() => {
     if (guided) return;
+    if (scrollAssistRef.current.timer) clearTimeout(scrollAssistRef.current.timer);
     focusProgressRef.current.current = 0;
     focusProgressRef.current.target = 0;
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -430,7 +437,30 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
       focusProgressRef.current.direction = Math.sign(targetDelta);
     }
     focusProgressRef.current.target = nextTarget;
+
+    // Native scrolling remains authoritative. After a short quiet period, only
+    // positions already close to a project center receive a small smooth nudge.
+    if (scrollAssistRef.current.timer) clearTimeout(scrollAssistRef.current.timer);
+    scrollAssistRef.current.timer = setTimeout(() => {
+      const scrollElement = scrollRef.current;
+      if (!scrollElement || !guided) return;
+      const range = scrollElement.scrollHeight - scrollElement.clientHeight;
+      if (range <= 0) return;
+
+      const position = clamp(scrollElement.scrollTop / range, 0, 1);
+      const nearestCenter = FOCUS_CENTERS.reduce((nearest, center) => (
+        Math.abs(center - position) < Math.abs(nearest - position) ? center : nearest
+      ), FOCUS_CENTERS[0]);
+      const distance = Math.abs(nearestCenter - position);
+
+      if (distance > SCROLL_ASSIST_RANGE || distance < 0.002) return;
+      scrollElement.scrollTo({ top: nearestCenter * range, behavior: 'smooth' });
+    }, SCROLL_ASSIST_DELAY);
   }, [guided]);
+
+  useEffect(() => () => {
+    if (scrollAssistRef.current.timer) clearTimeout(scrollAssistRef.current.timer);
+  }, []);
 
   useEffect(() => {
     if (mobile || reducedMotion) return undefined;
@@ -441,7 +471,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
       const delta = Math.min((timestamp - lastTime) / 1000, 0.05);
       lastTime = timestamp;
 
-      const focusEase = 1 - Math.exp(-delta * 2.4);
+      const focusEase = 1 - Math.exp(-delta * 2.9);
       focusProgressRef.current.current += (
         focusProgressRef.current.target - focusProgressRef.current.current
       ) * focusEase;
