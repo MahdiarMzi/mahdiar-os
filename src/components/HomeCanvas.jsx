@@ -12,9 +12,9 @@ const FOCUS_X = -235;
 const FOCUS_Y = -28;
 const MOBILE_QUERY = '(max-width: 768px)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
-const FOCUS_ENTRY = 0.2;
-const FOCUS_HOLD = 0.6;
-const FOCUS_EXIT = 0.2;
+const FOCUS_ENTRY = 0.25;
+const FOCUS_HOLD = 0.5;
+const FOCUS_EXIT = 0.25;
 const FOCUS_SEGMENT = FOCUS_ENTRY + FOCUS_HOLD + FOCUS_EXIT;
 const FOCUS_STEP = FOCUS_ENTRY + FOCUS_HOLD;
 
@@ -132,9 +132,14 @@ const smoothstep = (start, end, value) => {
   return progress * progress * (3 - 2 * progress);
 };
 
+const smootherstep = (start, end, value) => {
+  const progress = clamp((value - start) / (end - start), 0, 1);
+  return progress * progress * progress * (progress * (progress * 6 - 15) + 10);
+};
+
 const getFocusState = (progress) => {
-  // Adjacent segments share their 20% transition window. This gives every
-  // project a 20% entry, 60% stable reading hold, and 20% exit while keeping
+  // Adjacent segments share their 25% transition window. This gives every
+  // project a 25% entry, 50% stable reading hold, and 25% exit while keeping
   // the outgoing and incoming weights complementary through each handoff.
   const timelineLength = (MODULES.length - 1) * FOCUS_STEP + FOCUS_SEGMENT;
   const phase = clamp(progress, 0, 1) * timelineLength;
@@ -143,13 +148,15 @@ const getFocusState = (progress) => {
     const enterEnd = start + FOCUS_ENTRY;
     const holdEnd = enterEnd + FOCUS_HOLD;
     const end = holdEnd + FOCUS_EXIT;
-    const entry = smoothstep(start, enterEnd, phase);
-    const exit = 1 - smoothstep(holdEnd, end, phase);
+    const entry = smootherstep(start, enterEnd, phase);
+    const exit = 1 - smootherstep(holdEnd, end, phase);
     return entry * exit;
   });
 
-  const engagement = Math.max(...weights);
   const weightTotal = weights.reduce((total, weight) => total + weight, 0);
+  // Complementary handoff weights sum to one, preventing the whole scene from
+  // briefly brightening or dropping focus at the midpoint between projects.
+  const engagement = clamp(weightTotal, 0, 1);
   const timeline = weightTotal > 0
     ? weights.reduce((total, weight, index) => total + weight * index, 0) / weightTotal
     : progress < 0.5 ? 0 : MODULES.length - 1;
@@ -230,7 +237,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   const rafRef = useRef(null);
   const suppressClickRef = useRef(null);
   const pointerRef = useRef(null);
-  const focusProgressRef = useRef({ current: 0, target: 0 });
+  const focusProgressRef = useRef({ current: 0, target: 0, direction: 1 });
   const statesRef = useRef(Object.fromEntries(MODULES.map((mod) => [mod.id, {
     angle: mod.baseAngle,
     targetAngle: mod.baseAngle,
@@ -320,12 +327,12 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
         element.style.top = `${cy + displayY}px`;
         element.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(4)})`;
         element.style.opacity = opacity.toFixed(4);
-        element.style.zIndex = state.dragging || focusWeight > 0.5
+        element.style.zIndex = state.dragging || focusWeight > 0.001
           ? 30
           : String(Math.round(depth * 8) + 4);
         element.classList.toggle('orbit-module-wrap--stabilized', active);
         element.classList.toggle('orbit-module-wrap--dragging', state.dragging);
-        element.classList.toggle('orbit-module-wrap--focused', focusWeight > 0.5);
+        element.classList.toggle('orbit-module-wrap--focused', focusWeight > 0.001);
       }
 
       const line = lineRefs.current[mod.id];
@@ -360,15 +367,21 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
 
       const preview = previewRefs.current[mod.id];
       if (preview) {
-        // Preview copy yields briefly at the midpoint so two project names
-        // never become visually superimposed during a module crossfade.
-        const previewWeight = smoothstep(0.5, 0.92, focusWeight);
+        const previewWeight = smootherstep(0.08, 0.92, focusWeight);
+        const previewSide = Math.sign(index - focus.timeline);
+        const movingForward = focusProgressRef.current.direction >= 0;
+        const outgoing = movingForward ? previewSide < 0 : previewSide > 0;
+        const contentWeight = outgoing
+          ? smootherstep(0.32, 0.62, focusWeight)
+          : smootherstep(0.48, 0.75, focusWeight);
+        const previewOffset = previewSide * (1 - previewWeight) * 6;
         preview.style.opacity = previewWeight.toFixed(4);
-        preview.style.transform = `translateY(calc(-50% + ${(1 - previewWeight) * 14}px)) scale(${(0.985 + previewWeight * 0.015).toFixed(4)})`;
-        preview.style.visibility = previewWeight > 0.01 ? 'visible' : 'hidden';
-        preview.style.pointerEvents = previewWeight > 0.5 ? 'auto' : 'none';
-        preview.inert = previewWeight <= 0.5;
-        preview.setAttribute('aria-hidden', previewWeight > 0.5 ? 'false' : 'true');
+        preview.style.transform = `translateY(calc(-50% + ${previewOffset}px)) scale(${(0.982 + previewWeight * 0.018).toFixed(4)})`;
+        preview.style.setProperty('--panel-content-opacity', contentWeight.toFixed(4));
+        preview.style.visibility = previewWeight > 0.002 ? 'visible' : 'hidden';
+        preview.style.pointerEvents = focusWeight > 0.55 ? 'auto' : 'none';
+        preview.inert = focusWeight <= 0.55;
+        preview.setAttribute('aria-hidden', focusWeight > 0.55 ? 'false' : 'true');
       }
     });
 
@@ -409,9 +422,14 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
     if (!guided) return;
     const element = event.currentTarget;
     const scrollRange = element.scrollHeight - element.clientHeight;
-    focusProgressRef.current.target = scrollRange > 0
+    const nextTarget = scrollRange > 0
       ? clamp(element.scrollTop / scrollRange, 0, 1)
       : 0;
+    const targetDelta = nextTarget - focusProgressRef.current.target;
+    if (Math.abs(targetDelta) > 0.0001) {
+      focusProgressRef.current.direction = Math.sign(targetDelta);
+    }
+    focusProgressRef.current.target = nextTarget;
   }, [guided]);
 
   useEffect(() => {
@@ -423,7 +441,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
       const delta = Math.min((timestamp - lastTime) / 1000, 0.05);
       lastTime = timestamp;
 
-      const focusEase = 1 - Math.exp(-delta * 3.8);
+      const focusEase = 1 - Math.exp(-delta * 2.4);
       focusProgressRef.current.current += (
         focusProgressRef.current.target - focusProgressRef.current.current
       ) * focusEase;

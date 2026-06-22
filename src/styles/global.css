@@ -244,9 +244,9 @@ button {
 }
 
 .home-canvas--guided .home-canvas__scroll-space {
-  /* Four overlapping 140vh project segments. Shared 20% handoffs produce a
-     476vh travel range while keeping native, unsnapped scrolling. */
-  height: calc(100% + 476vh);
+  /* Four overlapping cinematic segments. The resulting native travel range
+     gives each project roughly 160–180vh without snapping or scroll capture. */
+  height: calc(100% + 590vh);
 }
 
 .home-canvas--guided .home-canvas__stage {
@@ -558,6 +558,10 @@ button {
   width: 72px;
   height: 1px;
   background: rgba(169, 175, 221, 0.38);
+}
+
+.project-focus-panel > * {
+  opacity: var(--panel-content-opacity, 1);
 }
 
 .project-focus-panel__header {
