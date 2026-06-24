@@ -1,4 +1,5 @@
 import spendlyStats from '../assets/projects/spendly/spendly-04-stats.png';
+import shamsaHomeDesktop from '../assets/projects/shamsa/shamsa-01-home-desktop.png';
 
 function ProjectVisual({ projectId }) {
   if (projectId === 'spendly') {
@@ -18,9 +19,9 @@ function ProjectVisual({ projectId }) {
       <div className="project-visual project-visual--shamsa" aria-hidden="true">
         <div className="project-visual__browser">
           <div className="project-visual__browser-bar"><i /><i /><i /><span /></div>
-          <div className="project-visual__web-hero"><span /><span /></div>
-          <div className="project-visual__web-grid"><i /><i /><i /></div>
+          <img src={shamsaHomeDesktop} alt="" />
         </div>
+        <span className="project-visual__shamsa-caption">Live website · Persian RTL</span>
       </div>
     );
   }

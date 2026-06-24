@@ -804,16 +804,39 @@ button {
 }
 
 .project-visual--shamsa {
-  padding: 12px 20px;
-  background: rgba(13, 15, 18, 0.45);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  padding: 14px;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(183, 174, 142, 0.07), transparent 40%),
+    rgba(13, 15, 18, 0.45);
+}
+
+.project-focus-panel .project-visual--shamsa {
+  height: 184px;
+}
+
+.project-visual--shamsa::before {
+  position: absolute;
+  width: 88%;
+  height: 62%;
+  border: 1px solid rgba(255, 255, 255, 0.035);
+  border-radius: 50%;
+  content: '';
+  transform: rotate(-4deg);
 }
 
 .project-visual__browser {
-  height: 100%;
+  position: relative;
+  z-index: 1;
+  width: min(100%, 310px);
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
-  background: rgba(229, 229, 224, 0.055);
+  border-radius: 9px;
+  background: #f3f0e8;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.3);
 }
 
 .project-visual__browser-bar,
@@ -842,35 +865,24 @@ button {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.project-visual__web-hero {
-  height: 47px;
-  padding: 13px 16px;
-  background: linear-gradient(90deg, rgba(103, 113, 125, 0.12), transparent);
-}
-
-.project-visual__web-hero span {
+.project-visual__browser img {
   display: block;
-  width: 42%;
-  height: 5px;
-  margin-bottom: 7px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.16);
+  width: 100%;
+  height: calc(100% - 18px);
+  object-fit: cover;
+  object-position: top;
 }
 
-.project-visual__web-hero span + span { width: 25%; height: 3px; }
-
-.project-visual__web-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
-  padding: 8px 12px;
-}
-
-.project-visual__web-grid i {
-  height: 23px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.025);
+.project-visual__shamsa-caption {
+  position: absolute;
+  bottom: 8px;
+  left: 11px;
+  z-index: 2;
+  color: rgba(226, 228, 238, 0.42);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .project-visual--mahshid {
@@ -1239,6 +1251,10 @@ button {
 
 .workspace-detail--spendly {
   max-width: 1040px;
+}
+
+.workspace-detail--shamsa {
+  max-width: 1060px;
 }
 
 .workspace-detail::before {
@@ -1796,6 +1812,285 @@ button {
   padding-top: 2px;
 }
 
+/* ─── SHAMSA CASE STUDY ─────────────────────────── */
+.workspace-detail__body--shamsa {
+  gap: 26px;
+  padding: 22px 26px 32px;
+}
+
+.shamsa-gallery {
+  min-width: 0;
+}
+
+.shamsa-gallery__stage {
+  position: relative;
+  height: clamp(360px, 52vh, 560px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(146, 139, 111, 0.08), transparent 44%),
+    linear-gradient(145deg, rgba(28, 29, 33, 0.82), rgba(8, 8, 11, 0.94));
+  touch-action: pan-y;
+}
+
+.shamsa-gallery__stage::before {
+  position: absolute;
+  inset: 12% 9%;
+  border: 1px solid rgba(255, 255, 255, 0.035);
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+}
+
+.shamsa-gallery__image {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: calc(100% - 36px);
+  height: calc(100% - 70px);
+  object-fit: contain;
+  object-position: center;
+  border-radius: 12px;
+  opacity: 0;
+  filter: saturate(0.92);
+  transform: translateY(7px) scale(0.99);
+  box-shadow:
+    0 26px 54px rgba(0, 0, 0, 0.36),
+    0 0 0 1px rgba(255, 255, 255, 0.07);
+  transition:
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.shamsa-gallery__image--active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.shamsa-gallery__caption {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  left: 18px;
+  display: flex;
+  justify-content: space-between;
+  color: #777780;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.shamsa-gallery__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #aaaab2;
+  background: rgba(12, 12, 16, 0.72);
+  font-size: 25px;
+  line-height: 1;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    background var(--duration-fast) ease;
+}
+
+.shamsa-gallery__arrow:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(25, 25, 31, 0.9);
+}
+
+.shamsa-gallery__arrow:focus-visible,
+.shamsa-gallery__thumbnail:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.shamsa-gallery__arrow--previous { left: 18px; }
+.shamsa-gallery__arrow--next { right: 18px; }
+
+.shamsa-gallery__thumbnails {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.shamsa-gallery__thumbnail {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(90px, 42%) minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  height: 86px;
+  padding: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 11px;
+  color: #686871;
+  background: rgba(255, 255, 255, 0.018);
+  text-align: left;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    background var(--duration-fast) ease;
+}
+
+.shamsa-gallery__thumbnail::after {
+  position: absolute;
+  right: 9px;
+  bottom: 0;
+  left: 9px;
+  height: 1px;
+  background: rgba(220, 222, 239, 0.65);
+  content: '';
+  transform: scaleX(0);
+  transition: transform var(--duration-standard) ease;
+}
+
+.shamsa-gallery__thumbnail img {
+  width: 100%;
+  height: 70px;
+  object-fit: contain;
+  object-position: top;
+  border-radius: 6px;
+  background: rgba(5, 5, 7, 0.35);
+  opacity: 0.58;
+}
+
+.shamsa-gallery__thumbnail span {
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+}
+
+.shamsa-gallery__thumbnail--active {
+  color: #c7c7cd;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.shamsa-gallery__thumbnail--active::after { transform: scaleX(1); }
+.shamsa-gallery__thumbnail--active img { opacity: 0.95; }
+
+.shamsa-case-study__facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid rgba(255, 255, 255, 0.065);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+.shamsa-case-study__facts > div { padding: 15px 18px; }
+.shamsa-case-study__facts > div + div { border-left: 1px solid rgba(255, 255, 255, 0.065); }
+
+.shamsa-case-study__facts dt,
+.shamsa-case-study__stack h3,
+.shamsa-case-study__overview h3,
+.shamsa-case-study__narrative h3,
+.shamsa-case-study__section-heading h3,
+.shamsa-case-study__outcome h3 {
+  color: #686871;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.shamsa-case-study__facts dd {
+  margin-top: 6px;
+  color: #c2c2c8;
+  font-size: 12px;
+}
+
+.shamsa-case-study__stack {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  align-items: start;
+  gap: 12px;
+}
+
+.shamsa-case-study__stack h3 { padding-top: 6px; }
+.shamsa-case-study__stack > div { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.shamsa-case-study__stack span,
+.shamsa-case-study__features li {
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 999px;
+  color: #9999a2;
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 10px;
+}
+
+.shamsa-case-study__stack span { padding: 5px 10px; }
+
+.shamsa-case-study__overview,
+.shamsa-case-study__outcome {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.shamsa-case-study__overview > span,
+.shamsa-case-study__outcome > span,
+.shamsa-case-study__narrative section > span,
+.shamsa-case-study__section-heading > span {
+  color: #55555e;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+
+.shamsa-case-study__overview p,
+.shamsa-case-study__outcome p,
+.shamsa-case-study__narrative p {
+  margin-top: 10px;
+  color: #b1b1b8;
+  font-size: 13px;
+  line-height: 1.72;
+}
+
+.shamsa-case-study__narrative {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.shamsa-case-study__narrative section,
+.shamsa-case-study__features {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.shamsa-case-study__narrative h3 { margin-top: 18px; color: #94949d; }
+.shamsa-case-study__section-heading { display: flex; align-items: center; gap: 12px; }
+
+.shamsa-case-study__features ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  list-style: none;
+}
+
+.shamsa-case-study__features li { padding: 7px 11px; }
+.shamsa-case-study__actions { padding-top: 2px; }
+
 /* ─── REDUCED MOTION ─────────────────────────────── */
 /* The JS orbit loop checks this via matchMedia and skips rAF entirely.
    This rule handles any remaining CSS animations / transitions. */
@@ -1908,6 +2203,10 @@ button {
     height: 210px;
   }
 
+  .project-focus-panel--mobile .project-visual--shamsa {
+    height: 200px;
+  }
+
   .project-focus-panel--mobile .project-focus-panel__meta {
     grid-template-columns: 1fr;
   }
@@ -1931,7 +2230,8 @@ button {
     max-height: calc(100svh - var(--bar-height) - 8px);
   }
 
-  .workspace-detail--spendly {
+  .workspace-detail--spendly,
+  .workspace-detail--shamsa {
     max-width: none;
   }
 
@@ -1949,6 +2249,11 @@ button {
   }
 
   .workspace-detail__body--spendly {
+    padding: 16px 14px 40px;
+    gap: 22px;
+  }
+
+  .workspace-detail__body--shamsa {
     padding: 16px 14px 40px;
     gap: 22px;
   }
@@ -2005,6 +2310,68 @@ button {
   .spendly-case-study__narrative section,
   .spendly-case-study__lists section,
   .spendly-case-study__feature-section {
+    padding: 18px;
+  }
+
+  .shamsa-gallery__stage {
+    height: min(52svh, 430px);
+    min-height: 310px;
+    border-radius: 17px;
+  }
+
+  .shamsa-gallery__image {
+    top: 14px;
+    left: 12px;
+    width: calc(100% - 24px);
+    height: calc(100% - 62px);
+    border-radius: 10px;
+  }
+
+  .shamsa-gallery__arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .shamsa-gallery__arrow--previous { left: 10px; }
+  .shamsa-gallery__arrow--next { right: 10px; }
+
+  .shamsa-gallery__thumbnails {
+    display: flex;
+    gap: 8px;
+    padding: 2px 2px 8px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .shamsa-gallery__thumbnails::-webkit-scrollbar { display: none; }
+
+  .shamsa-gallery__thumbnail {
+    flex: 0 0 152px;
+    grid-template-columns: 68px minmax(0, 1fr);
+    scroll-snap-align: start;
+  }
+
+  .shamsa-case-study__stack {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .shamsa-case-study__stack h3 { padding-top: 0; }
+
+  .shamsa-case-study__narrative {
+    grid-template-columns: 1fr;
+  }
+
+  .shamsa-case-study__overview,
+  .shamsa-case-study__outcome {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .shamsa-case-study__overview,
+  .shamsa-case-study__outcome,
+  .shamsa-case-study__narrative section,
+  .shamsa-case-study__features {
     padding: 18px;
   }
 
