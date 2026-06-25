@@ -172,12 +172,12 @@ const getFocusState = (progress) => {
 const MODULE_BY_ID = Object.fromEntries(MODULES.map((mod) => [mod.id, mod]));
 
 const HOME_CALLOUTS = [
-  { id: 'focus', label: 'CURRENT FOCUS', value: 'Building useful software' },
-  { id: 'location', label: 'LOCATION', value: 'Vancouver, BC' },
   { id: 'status', label: 'STATUS', value: 'Available for Internship' },
-  { id: 'currently', label: 'CURRENTLY', value: 'Building Mahdiar OS' },
-  { id: 'target', label: 'NEXT TARGET', value: 'Junior Software Engineer' },
+  { id: 'focus', label: 'CURRENT FOCUS', value: 'Building real software' },
+  { id: 'mission', label: 'MISSION', value: 'Build products that solve real problems' },
+  { id: 'location', label: 'LOCATION', value: 'Vancouver, BC' },
   { id: 'version', label: 'VERSION', value: 'Mahdiar OS v1.0' },
+  { id: 'target', label: 'NEXT TARGET', value: 'Junior Software Engineer' },
 ];
 
 function ProjectFocusPanel({ project, index, panelRef, mobile = false, onOpenDetail }) {
@@ -804,14 +804,16 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
           <span />
           <span />
           <span />
+          <i />
+          <i />
         </div>
         <svg className="home-idle__hud-lines" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M500 314 C358 318 286 300 188 294" />
           <path d="M500 306 C380 256 314 188 232 138" />
-          <path d="M500 306 C620 244 696 170 786 122" />
-          <path d="M500 314 C356 318 284 300 188 294" />
-          <path d="M500 314 C646 320 730 304 822 298" />
           <path d="M500 326 C398 392 342 438 244 486" />
+          <path d="M500 306 C620 244 696 170 786 122" />
           <path d="M500 326 C612 398 682 452 784 496" />
+          <path d="M500 314 C646 320 730 304 822 298" />
         </svg>
 
         <div className="home-idle__callouts" aria-label="System information">
@@ -828,6 +830,8 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
           <div className="home-idle__core-motion" aria-hidden="true">
             <span className="home-idle__core-ring home-idle__core-ring--outer" />
             <span className="home-idle__core-ring home-idle__core-ring--inner" />
+            <span className="home-idle__ring-light home-idle__ring-light--outer" />
+            <span className="home-idle__ring-light home-idle__ring-light--inner" />
             <span className="home-idle__orbit-dot home-idle__orbit-dot--one" />
             <span className="home-idle__orbit-dot home-idle__orbit-dot--two" />
             <span className="home-idle__orbit-dot home-idle__orbit-dot--three" />
