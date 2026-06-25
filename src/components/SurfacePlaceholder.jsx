@@ -7,8 +7,45 @@ const CONTENT = {
 
 const EMAIL = 'mahdiarmazinani@yahoo.com';
 const GITHUB_URL = 'https://github.com/MahdiarMzi';
-const LINKEDIN_URL = 'https://www.linkedin.com/in/mahdiar-mazinani/';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/mahdiar-mzi';
 const RESUME_URL = null;
+
+const MOBILE_CONNECTIONS = [
+  {
+    id: 'email',
+    label: 'Email',
+    meta: EMAIL,
+    action: 'Copy',
+    type: 'copy',
+  },
+  {
+    id: 'github',
+    label: 'GitHub',
+    meta: 'MahdiarMzi',
+    action: 'Open →',
+    type: 'link',
+    href: GITHUB_URL,
+    ariaLabel: 'Open MahdiarMzi on GitHub in a new tab',
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    meta: 'Mahdiar Mazinani',
+    action: 'Open →',
+    type: 'link',
+    href: LINKEDIN_URL,
+    ariaLabel: 'Open Mahdiar Mazinani on LinkedIn in a new tab',
+  },
+  {
+    id: 'resume',
+    label: 'Resume',
+    meta: 'PDF',
+    action: RESUME_URL ? 'Download ↓' : 'Resume Soon',
+    type: 'download',
+    href: RESUME_URL,
+    disabled: !RESUME_URL,
+  },
+];
 
 const CONNECT_ENDPOINTS = [
   {
@@ -71,9 +108,32 @@ const getConnectionPath = ({ portX, portY, bendX, x, y }) => (
   `M ${portX} ${portY} H ${bendX} V ${y} H ${x}`
 );
 
+const copyTextToClipboard = async (text) => {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Some mobile browsers expose Clipboard API but reject non-secure or
+      // embedded contexts. Fall through to the legacy selection-based copy.
+    }
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-9999px';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+};
+
 function ConnectSurface({ onClose }) {
   const [activeNode, setActiveNode] = useState(null);
   const [noticeVisible, setNoticeVisible] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
   const copyTimerRef = useRef(null);
   const noticeTimerRef = useRef(null);
   const surfaceRef = useRef(null);
@@ -95,13 +155,18 @@ function ConnectSurface({ onClose }) {
 
   const handleCopyEmail = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(EMAIL);
+      await copyTextToClipboard(EMAIL);
+      setCopiedEmail(true);
       setNoticeVisible(true);
       if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
       if (noticeTimerRef.current) window.clearTimeout(noticeTimerRef.current);
-      copyTimerRef.current = window.setTimeout(() => setActiveNode(null), 2000);
+      copyTimerRef.current = window.setTimeout(() => {
+        setCopiedEmail(false);
+        setActiveNode(null);
+      }, 2000);
       noticeTimerRef.current = window.setTimeout(() => setNoticeVisible(false), 2000);
     } catch {
+      setCopiedEmail(false);
       setNoticeVisible(false);
     }
   }, []);
@@ -184,6 +249,62 @@ function ConnectSurface({ onClose }) {
     );
   };
 
+  const renderMobileConnection = (connection) => {
+    const content = (
+      <>
+        <span className="connect-mobile-row__copy">
+          <span className="connect-mobile-row__label">{connection.label}</span>
+          <span className="connect-mobile-row__meta">{connection.meta}</span>
+        </span>
+        <span className="connect-mobile-row__action">
+          {connection.type === 'copy' && copiedEmail ? 'Copied ✓' : connection.action}
+        </span>
+      </>
+    );
+
+    if (connection.type === 'copy') {
+      return (
+        <button
+          type="button"
+          className="connect-mobile-row"
+          key={connection.id}
+          onClick={handleCopyEmail}
+          aria-label={`Copy email address ${EMAIL}`}
+        >
+          {content}
+        </button>
+      );
+    }
+
+    if (connection.disabled) {
+      return (
+        <button
+          type="button"
+          className="connect-mobile-row connect-mobile-row--disabled"
+          key={connection.id}
+          aria-disabled="true"
+          aria-label="Resume PDF is not available yet"
+        >
+          {content}
+        </button>
+      );
+    }
+
+    return (
+      <a
+        className="connect-mobile-row"
+        key={connection.id}
+        href={connection.href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={connection.ariaLabel}
+        download={connection.type === 'download' ? true : undefined}
+      >
+        {content}
+      </a>
+    );
+  };
+
   return (
     <section
       className="connect-surface"
@@ -195,6 +316,31 @@ function ConnectSurface({ onClose }) {
       <div className="connect-surface__mode" aria-hidden="true">
         <span>Communication mode</span>
         <i />
+      </div>
+
+      <div className="connect-mobile-sheet" aria-label="Connect communication sheet">
+        <header className="connect-mobile-sheet__header">
+          <CoreGlyph size={30} className="connect-mobile-sheet__glyph" />
+          <span>Communication mode</span>
+        </header>
+
+        <div className="connect-mobile-sheet__intro">
+          <h1>Connect</h1>
+          <p>Let&apos;s build something worth using.</p>
+        </div>
+
+        <div className="connect-mobile-sheet__rows" aria-label="Communication endpoints">
+          {MOBILE_CONNECTIONS.map(renderMobileConnection)}
+        </div>
+
+        <section className="connect-mobile-availability" aria-label="Availability">
+          <p>Available for:</p>
+          <ul>
+            <li>Software Engineering Internships</li>
+            <li>Junior Developer Roles</li>
+            <li>Freelance Projects</li>
+          </ul>
+        </section>
       </div>
 
       <div className="connect-field" role="group" aria-label="Communication endpoints">

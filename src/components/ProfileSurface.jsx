@@ -51,7 +51,7 @@ const IDENTITY_MODES = [
     meta: ['GitHub', 'LinkedIn', 'Email'],
     actions: [
       { label: 'GitHub', href: 'https://github.com/MahdiarMzi', external: true },
-      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/mahdiar-mazinani/', external: true },
+      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/mahdiar-mzi', external: true },
       { label: 'Email', href: 'mailto:mahdiarmazinani@yahoo.com' },
     ],
   },
