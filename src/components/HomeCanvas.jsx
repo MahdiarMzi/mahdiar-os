@@ -209,6 +209,11 @@ function ProjectFocusPanel({ project, index, panelRef, mobile = false, onOpenDet
       </dl>
 
       <div className="project-focus-panel__actions">
+        {onOpenDetail && (
+          <button type="button" onClick={(e) => { e.stopPropagation(); onOpenDetail(project.id); }}>
+            Open Workspace
+          </button>
+        )}
         {project.liveUrl && (
           <a href={project.liveUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
             Live Site <span aria-hidden="true">↗</span>
@@ -225,7 +230,7 @@ function ProjectFocusPanel({ project, index, panelRef, mobile = false, onOpenDet
   );
 }
 
-function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
+function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeView }) {
   const [mobile, setMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
   const [reducedMotion, setReducedMotion] = useState(
     () => window.matchMedia(REDUCED_MOTION_QUERY).matches
@@ -261,7 +266,8 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
     dragging: false,
   }])));
 
-  const guided = activeView === 'home' && !mobile && !reducedMotion;
+  const workMode = activeView === 'work';
+  const guided = workMode && !mobile && !reducedMotion;
 
   const isStabilized = useCallback((id) => {
     const state = statesRef.current[id];
@@ -462,6 +468,40 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
     if (scrollAssistRef.current.timer) clearTimeout(scrollAssistRef.current.timer);
   }, []);
 
+  const focusProject = useCallback((id, { openIfFocused = false } = {}) => {
+    if (!workMode) {
+      onOpenWork?.();
+      return;
+    }
+
+    const index = MODULES.findIndex((mod) => mod.id === id);
+    if (index < 0) return;
+
+    const currentFocus = getFocusState(focusProgressRef.current.current);
+    const targetCenter = FOCUS_CENTERS[index];
+    const alreadyFocused = currentFocus.weights[index] > 0.68
+      && Math.abs(focusProgressRef.current.target - targetCenter) < 0.055;
+
+    if (openIfFocused && alreadyFocused) {
+      onSelectWorkspace(id);
+      return;
+    }
+
+    const direction = Math.sign(targetCenter - focusProgressRef.current.target);
+    if (direction) focusProgressRef.current.direction = direction;
+    focusProgressRef.current.target = targetCenter;
+
+    const scrollElement = scrollRef.current;
+    const range = scrollElement ? scrollElement.scrollHeight - scrollElement.clientHeight : 0;
+
+    if (scrollElement && range > 0 && !reducedMotion) {
+      scrollElement.scrollTo({ top: targetCenter * range, behavior: 'smooth' });
+    } else {
+      focusProgressRef.current.current = targetCenter;
+      applyFrame();
+    }
+  }, [applyFrame, onOpenWork, onSelectWorkspace, reducedMotion, workMode]);
+
   useEffect(() => {
     if (mobile || reducedMotion) return undefined;
     let lastTime = 0;
@@ -649,8 +689,8 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
       suppressClickRef.current = null;
       return;
     }
-    onSelectWorkspace(id);
-  }, [onSelectWorkspace]);
+    focusProject(id, { openIfFocused: true });
+  }, [focusProject]);
 
   const moduleProps = (mod) => ({
     ...mod,
@@ -666,9 +706,37 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
     onPointerCancel: (event) => handlePointerEnd(mod.id, event),
   });
 
+  if (activeView === 'home') {
+    return (
+      <div className="home-canvas home-canvas--home home-canvas--idle" aria-label="Home — OS idle">
+        <div className="home-canvas__bg" style={{ backgroundImage: `url(${mobile ? bgMobile : bgDesktop})` }} aria-hidden="true" />
+        <div className="home-canvas__bg-overlay" aria-hidden="true" />
+        <div className="home-canvas__geometry" aria-hidden="true" />
+        <div className="home-idle__field" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+
+        <main className="home-idle">
+          <div className="core-ambient" aria-hidden="true" />
+          <CoreGlyph size={mobile ? 76 : 94} pulse className="home-core-glyph" />
+          <div className="home-canvas__identity">
+            <h1 className="home-canvas__name">Mahdiar Mazinani</h1>
+            <p className="home-canvas__subtitle">Computer Studies · Vancouver</p>
+          </div>
+          <button type="button" className="home-idle__work-button" onClick={onOpenWork}>
+            Open Work
+          </button>
+        </main>
+      </div>
+    );
+  }
+
   if (mobile) {
     return (
-      <div className={`home-canvas home-canvas--${activeView}`} aria-label="Home">
+      <div className={`home-canvas home-canvas--${activeView}`} aria-label="Work — project list">
         <div className="home-canvas__bg" style={{ backgroundImage: `url(${bgMobile})` }} aria-hidden="true" />
         <div className="home-canvas__bg-overlay" aria-hidden="true" />
         <div className="home-canvas__geometry" aria-hidden="true" />
@@ -701,7 +769,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, activeView }) {
   return (
     <div
       className={`home-canvas home-canvas--${activeView}${guided ? ' home-canvas--guided' : ''}`}
-      aria-label={guided ? 'Home — scroll to explore work' : 'Home'}
+      aria-label={guided ? 'Work — scroll to explore projects' : 'Work'}
       ref={scrollRef}
       onScroll={handleScroll}
       tabIndex={guided ? 0 : undefined}

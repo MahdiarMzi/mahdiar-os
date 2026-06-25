@@ -437,6 +437,99 @@ button {
   animation: surface-in var(--duration-fast) ease-out both;
 }
 
+/* ─── HOME IDLE STATE ───────────────────────────── */
+.home-canvas--idle {
+  overflow: hidden;
+}
+
+.home-idle {
+  position: absolute;
+  inset: var(--bar-height) 0 var(--dock-height);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.home-idle .core-ambient {
+  top: 50%;
+}
+
+.home-idle__field {
+  position: absolute;
+  inset: var(--bar-height) 0 var(--dock-height);
+  pointer-events: none;
+  opacity: 0.42;
+}
+
+.home-idle__field::before,
+.home-idle__field::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 520px;
+  height: 322px;
+  border: 1px solid rgba(236, 236, 240, 0.045);
+  border-radius: 50%;
+  content: '';
+  transform: translate(-50%, -50%) rotate(-7deg);
+}
+
+.home-idle__field::after {
+  width: 720px;
+  height: 452px;
+  border-color: rgba(236, 236, 240, 0.028);
+  transform: translate(-50%, -50%) rotate(8deg);
+}
+
+.home-idle__field span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(236, 236, 240, 0.09);
+  border-radius: 50%;
+  background: rgba(22, 22, 28, 0.58);
+}
+
+.home-idle__field span:nth-child(1) { transform: translate(-310px, -118px); }
+.home-idle__field span:nth-child(2) { transform: translate(286px, -92px); }
+.home-idle__field span:nth-child(3) { transform: translate(-250px, 132px); }
+.home-idle__field span:nth-child(4) { transform: translate(330px, 118px); }
+
+.home-idle__work-button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  color: #c4c4ca;
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    background var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+}
+
+.home-idle__work-button:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.home-idle__work-button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
+}
+
 /* ─── ORBIT: guide rings SVG ──────────────────────── */
 .orbit-rings {
   position: absolute;
@@ -664,6 +757,7 @@ button {
   margin-top: 15px;
 }
 
+.project-focus-panel__actions button,
 .project-focus-panel__actions a,
 .project-focus-panel__coming-soon {
   display: inline-flex;
@@ -685,12 +779,14 @@ button {
     background var(--duration-fast) ease;
 }
 
+.project-focus-panel__actions button:hover,
 .project-focus-panel__actions a:hover {
   color: var(--text-primary);
   border-color: rgba(255, 255, 255, 0.23);
   background: rgba(255, 255, 255, 0.065);
 }
 
+.project-focus-panel__actions button:focus-visible,
 .project-focus-panel__actions a:focus-visible {
   outline: 2px solid var(--border-focus);
   outline-offset: 2px;

@@ -15,10 +15,11 @@ function App() {
 
   const handleBootComplete = useCallback(() => setBooting(false), []);
   const handleCloseSurface = useCallback(() => setActiveView('home'), []);
+  const handleOpenWork = useCallback(() => setActiveView('work'), []);
 
   const handleNavigate = useCallback((view) => {
     setActiveView(view);
-    if (view !== 'home' && view !== 'work') {
+    if (view !== 'work') {
       setSelectedWorkspace(null);
     }
   }, []);
@@ -39,6 +40,7 @@ function App() {
             <HomeCanvas
               selectedWorkspace={selectedWorkspace}
               onSelectWorkspace={setSelectedWorkspace}
+              onOpenWork={handleOpenWork}
               activeView={activeView}
             />
           )}
