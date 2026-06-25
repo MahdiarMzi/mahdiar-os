@@ -240,7 +240,7 @@ function ConnectSurface({ onClose }) {
         {...commonProps}
         href={endpoint.href}
         target="_blank"
-        rel="noreferrer"
+        rel="noopener noreferrer"
         aria-label={endpoint.ariaLabel}
         download={endpoint.type === 'download' ? true : undefined}
       >
@@ -296,7 +296,7 @@ function ConnectSurface({ onClose }) {
         key={connection.id}
         href={connection.href}
         target="_blank"
-        rel="noreferrer"
+        rel="noopener noreferrer"
         aria-label={connection.ariaLabel}
         download={connection.type === 'download' ? true : undefined}
       >

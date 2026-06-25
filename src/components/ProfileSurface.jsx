@@ -151,7 +151,7 @@ function ProfileSurface({ onClose }) {
                       key={action.label}
                       href={action.href}
                       target={action.external ? '_blank' : undefined}
-                      rel={action.external ? 'noreferrer' : undefined}
+                      rel={action.external ? 'noopener noreferrer' : undefined}
                     >
                       {action.label}
                       <span aria-hidden="true">{action.external ? '↗' : '→'}</span>
