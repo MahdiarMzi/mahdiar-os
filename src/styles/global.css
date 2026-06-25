@@ -4688,79 +4688,94 @@ button {
   }
 
   .profile-surface-backdrop {
-    padding: calc(var(--bar-height) + 10px) 10px calc(var(--dock-height) + 10px);
+    padding: calc(var(--bar-height) + 8px) 12px calc(var(--dock-height) + 8px);
     align-items: flex-end;
   }
 
   .profile-surface {
     width: 100%;
-    height: min(700px, calc(100svh - var(--bar-height) - var(--dock-height) - 20px));
-    border-radius: 22px;
+    height: min(620px, calc(100dvh - var(--bar-height) - var(--dock-height) - 16px));
+    border-radius: 24px 24px 18px 18px;
+    overflow: hidden;
   }
 
   .profile-surface__close {
-    top: 24px;
-    right: 24px;
+    top: 18px;
+    right: 18px;
   }
 
   .identity-core {
-    padding: 38px 22px 22px;
+    padding: 32px 22px 18px;
   }
 
   .identity-core__stage {
     grid-template-columns: 1fr;
-    align-content: center;
-    gap: 22px;
+    align-content: start;
+    gap: 20px;
   }
 
   .identity-core__glyph-field {
-    width: 174px;
-    height: 174px;
+    width: 148px;
+    height: 148px;
   }
 
   .identity-core__glyph {
-    width: 68px;
-    height: 68px;
+    width: 58px;
+    height: 58px;
   }
 
   .identity-core__ring--outer {
-    width: 168px;
-    height: 168px;
+    width: 142px;
+    height: 142px;
   }
 
   .identity-core__ring--inner {
-    width: 112px;
-    height: 112px;
+    width: 96px;
+    height: 96px;
   }
 
   .identity-core__content {
     text-align: center;
   }
 
+  .identity-core__kicker {
+    font-size: 9px;
+  }
+
   .identity-core__content h2 {
-    margin-top: 16px;
-    font-size: clamp(34px, 10.5vw, 47px);
-    letter-spacing: -0.058em;
-    line-height: 1;
+    margin-top: 14px;
+    font-size: clamp(26px, 8.5vw, 38px);
+    letter-spacing: -0.055em;
+    line-height: 1.02;
   }
 
   .identity-core__body {
-    margin: 22px auto 0;
-    font-size: 14px;
-    line-height: 1.66;
+    margin: 16px auto 0;
+    font-size: 13.5px;
+    line-height: 1.62;
   }
 
   .identity-core__meta,
   .identity-core__actions {
     justify-content: center;
+    margin-top: 18px;
+    gap: 8px;
+  }
+
+  .identity-core__meta span,
+  .identity-core__actions a {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 10.5px;
   }
 
   .identity-core__nav {
     justify-content: flex-start;
-    gap: 7px;
-    padding-top: 20px;
+    gap: 6px;
+    padding-top: 16px;
     overflow-x: auto;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .identity-core__nav::-webkit-scrollbar {
@@ -4769,8 +4784,83 @@ button {
 
   .identity-core__nav-item {
     flex: 0 0 auto;
-    min-height: 38px;
+    min-height: 36px;
     padding: 0 12px;
+    font-size: 10.5px;
+  }
+}
+
+/* ── iPhone SE and small phones (≤ 430px) ── */
+@media (max-width: 430px) {
+  .profile-surface {
+    height: min(560px, calc(100dvh - var(--bar-height) - var(--dock-height) - 16px));
+  }
+
+  .identity-core {
+    padding: 22px 18px 14px;
+  }
+
+  .identity-core__stage {
+    gap: 14px;
+  }
+
+  .identity-core__glyph-field {
+    width: 104px;
+    height: 104px;
+  }
+
+  .identity-core__glyph {
+    width: 44px;
+    height: 44px;
+  }
+
+  .identity-core__ring--outer {
+    width: 100px;
+    height: 100px;
+  }
+
+  .identity-core__ring--inner {
+    width: 68px;
+    height: 68px;
+  }
+
+  .identity-core__content h2 {
+    margin-top: 10px;
+    font-size: clamp(22px, 7.5vw, 28px);
+    letter-spacing: -0.05em;
+  }
+
+  .identity-core__body {
+    margin: 12px auto 0;
+    font-size: 13px;
+    line-height: 1.58;
+  }
+
+  .identity-core__meta,
+  .identity-core__actions {
+    margin-top: 14px;
+    gap: 7px;
+  }
+
+  .identity-core__meta span,
+  .identity-core__actions a {
+    min-height: 30px;
+    padding: 0 10px;
     font-size: 10px;
+  }
+
+  .identity-core__nav {
+    padding-top: 12px;
+    gap: 5px;
+  }
+
+  .identity-core__nav-item {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .identity-core__nav-item span {
+    display: none;
   }
 }
