@@ -171,6 +171,15 @@ const getFocusState = (progress) => {
 
 const MODULE_BY_ID = Object.fromEntries(MODULES.map((mod) => [mod.id, mod]));
 
+const HOME_CALLOUTS = [
+  { id: 'focus', label: 'CURRENT FOCUS', value: 'Building useful software' },
+  { id: 'location', label: 'LOCATION', value: 'Vancouver, BC' },
+  { id: 'status', label: 'STATUS', value: 'Available for Internship' },
+  { id: 'currently', label: 'CURRENTLY', value: 'Building Mahdiar OS' },
+  { id: 'target', label: 'NEXT TARGET', value: 'Junior Software Engineer' },
+  { id: 'version', label: 'VERSION', value: 'Mahdiar OS v1.0' },
+];
+
 function ProjectFocusPanel({ project, index, panelRef, mobile = false, onOpenDetail }) {
   const title = project.panelTitle || project.title;
 
@@ -244,6 +253,8 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
   const ringRefs = useRef({});
   const previewRefs = useRef({});
   const scrollCueRef = useRef(null);
+  const homeIdleRef = useRef(null);
+  const homeParallaxRef = useRef({ x: 0, y: 0, tx: 0, ty: 0, frame: null });
   const rafRef = useRef(null);
   const suppressClickRef = useRef(null);
   const pointerRef = useRef(null);
@@ -289,6 +300,61 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
     query.addEventListener('change', handleChange);
     return () => query.removeEventListener('change', handleChange);
   }, []);
+
+  useEffect(() => {
+    if (activeView !== 'home' || reducedMotion) return undefined;
+
+    const element = homeIdleRef.current;
+    if (!element) return undefined;
+
+    const parallax = homeParallaxRef.current;
+
+    const applyParallax = () => {
+      parallax.x += (parallax.tx - parallax.x) * 0.08;
+      parallax.y += (parallax.ty - parallax.y) * 0.08;
+      element.style.setProperty('--idle-x', parallax.x.toFixed(4));
+      element.style.setProperty('--idle-y', parallax.y.toFixed(4));
+
+      if (Math.abs(parallax.tx - parallax.x) > 0.001 || Math.abs(parallax.ty - parallax.y) > 0.001) {
+        parallax.frame = requestAnimationFrame(applyParallax);
+      } else {
+        parallax.frame = null;
+      }
+    };
+
+    const requestParallaxFrame = () => {
+      if (!parallax.frame) parallax.frame = requestAnimationFrame(applyParallax);
+    };
+
+    const handlePointerMove = (event) => {
+      const rect = element.getBoundingClientRect();
+      parallax.tx = clamp(((event.clientX - rect.left) / rect.width - 0.5) * 2, -1, 1);
+      parallax.ty = clamp(((event.clientY - rect.top) / rect.height - 0.5) * 2, -1, 1);
+      requestParallaxFrame();
+    };
+
+    const handlePointerLeave = () => {
+      parallax.tx = 0;
+      parallax.ty = 0;
+      requestParallaxFrame();
+    };
+
+    element.addEventListener('pointermove', handlePointerMove, { passive: true });
+    element.addEventListener('pointerleave', handlePointerLeave);
+
+    return () => {
+      element.removeEventListener('pointermove', handlePointerMove);
+      element.removeEventListener('pointerleave', handlePointerLeave);
+      if (parallax.frame) cancelAnimationFrame(parallax.frame);
+      parallax.x = 0;
+      parallax.y = 0;
+      parallax.tx = 0;
+      parallax.ty = 0;
+      parallax.frame = null;
+      element.style.removeProperty('--idle-x');
+      element.style.removeProperty('--idle-y');
+    };
+  }, [activeView, reducedMotion]);
 
 
   const getCompression = useCallback((mod, state) => (
@@ -708,26 +774,74 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
 
   if (activeView === 'home') {
     return (
-      <div className="home-canvas home-canvas--home home-canvas--idle" aria-label="Home — OS idle">
+      <div
+        className="home-canvas home-canvas--home home-canvas--idle"
+        aria-label="Home — OS idle"
+        ref={homeIdleRef}
+      >
         <div className="home-canvas__bg" style={{ backgroundImage: `url(${mobile ? bgMobile : bgDesktop})` }} aria-hidden="true" />
         <div className="home-canvas__bg-overlay" aria-hidden="true" />
         <div className="home-canvas__geometry" aria-hidden="true" />
-        <div className="home-idle__field" aria-hidden="true">
+        <div className="home-idle__atmosphere" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
           <span />
           <span />
           <span />
           <span />
         </div>
+        <div className="home-idle__depth" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="home-idle__field" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <svg className="home-idle__hud-lines" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M500 306 C380 256 314 188 232 138" />
+          <path d="M500 306 C620 244 696 170 786 122" />
+          <path d="M500 314 C356 318 284 300 188 294" />
+          <path d="M500 314 C646 320 730 304 822 298" />
+          <path d="M500 326 C398 392 342 438 244 486" />
+          <path d="M500 326 C612 398 682 452 784 496" />
+        </svg>
+
+        <div className="home-idle__callouts" aria-label="System information">
+          {HOME_CALLOUTS.map((item) => (
+            <div className={`home-idle__callout home-idle__callout--${item.id}`} key={item.id}>
+              <span className="home-idle__callout-label">{item.label}</span>
+              <span className="home-idle__callout-value">{item.value}</span>
+            </div>
+          ))}
+        </div>
 
         <main className="home-idle">
           <div className="core-ambient" aria-hidden="true" />
-          <CoreGlyph size={mobile ? 76 : 94} pulse className="home-core-glyph" />
+          <div className="home-idle__core-motion" aria-hidden="true">
+            <span className="home-idle__core-ring home-idle__core-ring--outer" />
+            <span className="home-idle__core-ring home-idle__core-ring--inner" />
+            <span className="home-idle__orbit-dot home-idle__orbit-dot--one" />
+            <span className="home-idle__orbit-dot home-idle__orbit-dot--two" />
+            <span className="home-idle__orbit-dot home-idle__orbit-dot--three" />
+            <span className="home-idle__spark" />
+            <span className="home-idle__radial-wave" />
+          </div>
+          <CoreGlyph size={mobile ? 76 : 94} className="home-core-glyph" />
           <div className="home-canvas__identity">
             <h1 className="home-canvas__name">Mahdiar Mazinani</h1>
             <p className="home-canvas__subtitle">Computer Studies · Vancouver</p>
           </div>
           <button type="button" className="home-idle__work-button" onClick={onOpenWork}>
-            Open Work
+            <span>Open Work</span>
+            <span className="home-idle__work-arrow" aria-hidden="true">→</span>
           </button>
         </main>
       </div>
