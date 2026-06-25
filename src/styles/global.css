@@ -1360,7 +1360,7 @@ button {
   border-radius: 4px;
 }
 
-.connect-node:disabled {
+.connect-node[aria-disabled='true'] {
   color: #5a5a62;
   cursor: not-allowed;
 }
@@ -3146,64 +3146,56 @@ button {
   }
 
   .surface-placeholder--connect {
-    align-items: flex-end;
-    padding: calc(var(--bar-height) + 8px) 0 0;
+    align-items: center;
+    padding: var(--bar-height) 16px var(--dock-height);
   }
 
   .connect-surface {
     width: 100%;
-    max-height: calc(100svh - var(--bar-height) - 8px);
-    border-right: 0;
-    border-bottom: 0;
-    border-left: 0;
-    border-radius: 20px 20px 0 0;
+    height: min(620px, calc(100svh - var(--bar-height) - var(--dock-height)));
+    min-height: 520px;
   }
 
-  .connect-surface__header {
-    padding: 18px 18px 16px;
+  .connect-graph {
+    width: 360px;
+    height: 520px;
+    transform: scale(0.94);
+    transform-origin: center;
   }
 
-  .connect-surface__header h1 {
-    font-size: 22px;
+  .connect-graph__lines {
+    display: none;
   }
 
-  .connect-surface__header p {
-    font-size: 12px;
+  .connect-graph__core {
+    top: 252px;
+    left: 180px;
   }
 
-  .connect-surface__cards {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 16px 18px 14px;
+  .connect-node {
+    min-width: 148px;
+    max-width: 210px;
   }
 
-  .connect-card {
-    min-height: 104px;
-    padding: 17px;
+  .connect-node--email { --node-x: 180px !important; --node-y: 84px !important; }
+  .connect-node--github { --node-x: 180px !important; --node-y: 180px !important; }
+  .connect-node--linkedin { --node-x: 180px !important; --node-y: 338px !important; }
+  .connect-node--resume { --node-x: 180px !important; --node-y: 434px !important; }
+
+  .connect-node:hover,
+  .connect-node:focus-visible {
+    transform: translate(-50%, -50%);
   }
 
-  .connect-card:hover,
-  .connect-card:focus-within {
-    transform: none;
+  .connect-notice {
+    top: calc(50% + 62px);
+    width: 100%;
+    text-align: center;
   }
 
-  .connect-card__value {
-    font-size: 14px;
-  }
-
-  .connect-card__action {
-    min-width: 82px;
-    padding: 0 13px;
-  }
-
-  .connect-availability {
-    margin: 0 18px 34px;
-    padding: 18px;
-  }
-
-  .connect-availability ul {
-    display: grid;
-    gap: 8px;
+  .connect-surface__close-wrap {
+    top: 10px;
+    right: 4px;
   }
 
   /* Orbit wrapper is not used on mobile — but guard just in case */

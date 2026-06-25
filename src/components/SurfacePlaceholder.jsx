@@ -141,7 +141,7 @@ function ConnectSurface({ onClose }) {
           type="button"
           key={endpoint.id}
           {...commonProps}
-          disabled
+          aria-disabled="true"
           aria-label="Resume PDF is not available yet"
         >
           {content}
