@@ -1056,6 +1056,51 @@ button {
   outline-offset: 3px;
 }
 
+/* ── Home Narrative — rotating identity statement ── */
+@keyframes home-scan {
+  0%   { opacity: 0; transform: scaleX(0); }
+  35%  { opacity: 0.55; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(1); }
+}
+
+.home-narrative {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  max-width: 500px;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.home-narrative__scan {
+  display: block;
+  width: 130px;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent, rgba(160, 168, 224, 0.55), transparent);
+  transform-origin: left center;
+  animation: home-scan 1300ms ease both;
+  margin-bottom: 3px;
+}
+
+.home-narrative__headline {
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+  color: rgba(240, 240, 246, 0.72);
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.home-narrative__sub {
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.26);
+  line-height: 1.6;
+}
+
 @keyframes idle-core-breathe {
   0%, 100% { opacity: 0.86; transform: translate(-50%, -50%) scale(0.985); }
   50% { opacity: 1; transform: translate(-50%, -50%) scale(1.025); }
@@ -3957,6 +4002,14 @@ button {
 
   .home-idle__work-button {
     min-height: 44px;
+  }
+
+  .home-narrative {
+    max-width: 88vw;
+  }
+
+  .home-narrative__headline {
+    font-size: 13.5px;
   }
 
   /* Allow vertical scroll within the canvas on mobile */

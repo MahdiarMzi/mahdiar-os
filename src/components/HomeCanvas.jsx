@@ -180,6 +180,59 @@ const HOME_CALLOUTS = [
   { id: 'target', label: 'NEXT TARGET', value: 'Junior Software Engineer' },
 ];
 
+const HEADLINES = [
+  'Building software that feels considered.',
+  'From student projects to real products.',
+  'Design-minded engineering.',
+  'Systems, interfaces, and products that work.',
+  'Computer Studies student building real software in Vancouver.',
+];
+
+function HomeNarrative({ reducedMotion }) {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (reducedMotion) return undefined;
+
+    const HOLD = 4500;
+    const FADE_MS = 700;
+
+    const t1 = setTimeout(() => setVisible(false), HOLD);
+    const t2 = setTimeout(() => {
+      setIndex((i) => (i + 1) % HEADLINES.length);
+      setVisible(true);
+    }, HOLD + FADE_MS);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [index, reducedMotion]);
+
+  return (
+    <div className="home-narrative">
+      {!reducedMotion && (
+        <span className="home-narrative__scan" key={index} aria-hidden="true" />
+      )}
+      <p
+        className="home-narrative__headline"
+        aria-live="polite"
+        aria-atomic="true"
+        style={reducedMotion ? undefined : {
+          opacity: visible ? 1 : 0,
+          transform: `translateY(${visible ? 0 : -6}px)`,
+        }}
+      >
+        {HEADLINES[index]}
+      </p>
+      <p className="home-narrative__sub">
+        A product-focused developer building web and iOS experiences.
+      </p>
+    </div>
+  );
+}
+
 function ProjectFocusPanel({ project, index, panelRef, mobile = false, onOpenDetail }) {
   const title = project.panelTitle || project.title;
 
@@ -864,6 +917,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
             <h1 className="home-canvas__name">Mahdiar Mazinani</h1>
             <p className="home-canvas__subtitle">Computer Studies · Vancouver</p>
           </div>
+          <HomeNarrative reducedMotion={reducedMotion} />
           <button type="button" className="home-idle__work-button" onClick={onOpenWork}>
             <span>Open Work</span>
             <span className="home-idle__work-arrow" aria-hidden="true">→</span>
