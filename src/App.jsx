@@ -5,6 +5,7 @@ import HomeCanvas from './components/HomeCanvas';
 import Dock from './components/Dock';
 import SurfacePlaceholder from './components/SurfacePlaceholder';
 import WorkspaceDetail from './components/WorkspaceDetail';
+import ProfileSurface from './components/ProfileSurface';
 import './styles/global.css';
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
 
   const handleCloseWorkspace = useCallback(() => setSelectedWorkspace(null), []);
 
-  const showCanvas = activeView === 'home' || activeView === 'work';
+  const showCanvas = activeView === 'home' || activeView === 'work' || activeView === 'profile';
 
   return (
     <>
@@ -47,6 +48,10 @@ function App() {
               view={activeView}
               onClose={handleCloseSurface}
             />
+          )}
+
+          {activeView === 'profile' && (
+            <ProfileSurface onClose={handleCloseSurface} />
           )}
 
           {showCanvas && selectedWorkspace && (
