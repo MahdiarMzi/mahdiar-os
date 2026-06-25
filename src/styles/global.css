@@ -452,7 +452,7 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
+  gap: 20px;
   text-align: center;
   transform: translate(
     calc(var(--idle-x) * -5px),
@@ -466,7 +466,7 @@ button {
 }
 
 .home-canvas--idle .home-canvas__bg {
-  opacity: 0.64;
+  opacity: 0.68;
   transform: scale(1.018)
     translate(calc(var(--idle-x) * -4px), calc(var(--idle-y) * -3px));
   transition: opacity var(--duration-fast) ease;
@@ -474,9 +474,9 @@ button {
 
 .home-canvas--idle .home-canvas__bg-overlay {
   background:
-    radial-gradient(circle at 50% 47%, rgba(236, 236, 240, 0.055), transparent 27%),
-    radial-gradient(circle at 50% 74%, rgba(255, 255, 255, 0.026), transparent 34%),
-    linear-gradient(180deg, rgba(8, 8, 12, 0.3), rgba(8, 8, 12, 0.56));
+    radial-gradient(circle at 50% 46%, rgba(236, 236, 240, 0.062), transparent 28%),
+    radial-gradient(circle at 50% 74%, rgba(255, 255, 255, 0.022), transparent 36%),
+    linear-gradient(180deg, rgba(8, 8, 12, 0.27), rgba(8, 8, 12, 0.54));
 }
 
 .home-canvas--idle .home-canvas__geometry {
@@ -528,7 +528,7 @@ button {
 
 .home-idle__command-field {
   z-index: 4;
-  opacity: 0.46;
+  opacity: 0.38;
   transform: translate(calc(var(--idle-x) * 5px), calc(var(--idle-y) * 3px));
 }
 
@@ -625,7 +625,7 @@ button {
 
 .home-idle__field {
   z-index: 3;
-  opacity: 0.5;
+  opacity: 0.46;
   transform: translate(calc(var(--idle-x) * 10px), calc(var(--idle-y) * 7px));
   animation: idle-depth-drift 38s ease-in-out infinite alternate-reverse;
 }
@@ -693,7 +693,7 @@ button {
   height: calc(100% - var(--bar-height) - var(--dock-height));
   top: var(--bar-height);
   inset-inline: 0;
-  opacity: 0.66;
+  opacity: 0.58;
   transform: translate(calc(var(--idle-x) * -7px), calc(var(--idle-y) * -5px));
 }
 
@@ -750,10 +750,10 @@ button {
   position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   min-width: 128px;
-  color: rgba(238, 238, 242, 0.72);
-  letter-spacing: 0.08em;
+  color: rgba(238, 238, 242, 0.66);
+  letter-spacing: 0.075em;
   text-transform: uppercase;
   pointer-events: auto;
   transition:
@@ -777,7 +777,7 @@ button {
 }
 
 .home-idle__callout-label {
-  color: rgba(238, 238, 242, 0.34);
+  color: rgba(238, 238, 242, 0.3);
   font-size: 8px;
   font-weight: 600;
   line-height: 1;
@@ -785,10 +785,10 @@ button {
 
 .home-idle__callout-value {
   max-width: 190px;
-  color: rgba(238, 238, 242, 0.76);
+  color: rgba(238, 238, 242, 0.72);
   font-size: 10px;
-  line-height: 1.45;
-  letter-spacing: 0.045em;
+  line-height: 1.5;
+  letter-spacing: 0.035em;
   text-transform: none;
 }
 
@@ -947,20 +947,20 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 42px;
-  padding: 0 17px 0 20px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  min-height: 44px;
+  padding: 0 18px 0 21px;
+  border: 1px solid rgba(255, 255, 255, 0.145);
   border-radius: 999px;
-  color: #d0d0d5;
+  color: #d4d4da;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.032)),
     rgba(12, 12, 16, 0.38);
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.075em;
   text-transform: uppercase;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 18px 42px rgba(0, 0, 0, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 18px 42px rgba(0, 0, 0, 0.16);
   cursor: pointer;
   transition:
     color var(--duration-fast) ease,
@@ -3551,10 +3551,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--bar-height) + 18px) 24px calc(var(--dock-height) + 18px);
-  background: rgba(6, 6, 9, 0.72);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  padding: calc(var(--bar-height) + 20px) 24px calc(var(--dock-height) + 20px);
+  background: rgba(6, 6, 9, 0.68);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   animation: workspace-detail-backdrop-in var(--duration-standard) ease-out both;
 }
 
@@ -3564,22 +3564,22 @@ button {
 
 .profile-surface {
   position: relative;
-  width: min(1080px, 100%);
-  height: min(700px, 100%);
+  width: min(1060px, 100%);
+  height: min(680px, 100%);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  border-radius: 32px;
   background:
-    radial-gradient(circle at 50% 44%, rgba(238, 239, 248, 0.055), transparent 28%),
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.035), transparent 24%),
+    radial-gradient(circle at 48% 43%, rgba(238, 239, 248, 0.06), transparent 29%),
+    radial-gradient(circle at 17% 18%, rgba(255, 255, 255, 0.032), transparent 25%),
     rgba(13, 13, 18, 0.975);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
   box-shadow:
-    0 56px 120px rgba(0, 0, 0, 0.56),
-    0 18px 44px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.075);
-  animation: workspace-detail-in var(--duration-deliberate) cubic-bezier(0.22, 1, 0.36, 1) both;
+    0 54px 118px rgba(0, 0, 0, 0.54),
+    0 18px 42px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  animation: workspace-detail-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
   outline: none;
 }
 
@@ -3588,8 +3588,8 @@ button {
 }
 
 .profile-surface__close {
-  top: 22px;
-  right: 22px;
+  top: 24px;
+  right: 24px;
   z-index: 8;
 }
 
@@ -3609,22 +3609,22 @@ button {
 }
 
 .identity-core__ambient::before {
-  top: 48%;
+  top: 47%;
   left: 50%;
   width: 840px;
   height: 500px;
   transform: translate(-50%, -50%) rotate(-8deg);
-  animation: identity-core-drift 34s ease-in-out infinite alternate;
+  animation: identity-core-drift 40s ease-in-out infinite alternate;
 }
 
 .identity-core__ambient::after {
-  top: 58%;
+  top: 57%;
   left: 50%;
   width: 1040px;
   height: 620px;
   border-color: rgba(238, 238, 242, 0.022);
   transform: translate(-50%, -50%) rotate(9deg);
-  animation: identity-core-drift 46s ease-in-out infinite alternate-reverse;
+  animation: identity-core-drift 54s ease-in-out infinite alternate-reverse;
 }
 
 .identity-core__ambient span {
@@ -3643,23 +3643,24 @@ button {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   height: 100%;
-  padding: 58px 64px 42px;
+  padding: 62px 68px 44px;
 }
 
 .identity-core__stage {
   display: grid;
-  grid-template-columns: 330px minmax(0, 1fr);
+  grid-template-columns: 320px minmax(0, 1fr);
   align-items: center;
-  gap: clamp(42px, 6vw, 92px);
+  gap: clamp(48px, 6vw, 88px);
   min-height: 0;
+  perspective: 1200px;
 }
 
 .identity-core__glyph-field {
   position: relative;
   display: grid;
   place-items: center;
-  width: 300px;
-  height: 300px;
+  width: 292px;
+  height: 292px;
   justify-self: center;
 }
 
@@ -3685,16 +3686,16 @@ button {
 }
 
 .identity-core__ring--outer {
-  width: 278px;
-  height: 278px;
-  animation: identity-core-ring 38s linear infinite;
+  width: 272px;
+  height: 272px;
+  animation: identity-core-ring 44s linear infinite;
 }
 
 .identity-core__ring--inner {
-  width: 188px;
-  height: 188px;
-  border-color: rgba(238, 238, 242, 0.085);
-  animation: identity-core-ring 27s linear infinite reverse;
+  width: 184px;
+  height: 184px;
+  border-color: rgba(238, 238, 242, 0.078);
+  animation: identity-core-ring 32s linear infinite reverse;
 }
 
 .identity-core__node {
@@ -3709,53 +3710,53 @@ button {
 .identity-core__node--three { animation: identity-core-orbit-three 31s linear infinite; }
 
 .identity-core__content {
-  max-width: 620px;
-  animation: identity-core-content-in var(--duration-deliberate) cubic-bezier(0.22, 1, 0.36, 1) both;
+  max-width: 610px;
+  animation: identity-core-content-in 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .identity-core__kicker {
-  color: #666671;
+  color: #5f5f69;
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.17em;
   text-transform: uppercase;
 }
 
 .identity-core__content h2 {
-  max-width: 720px;
-  margin-top: 18px;
+  max-width: 700px;
+  margin-top: 20px;
   color: var(--text-primary);
-  font-size: clamp(46px, 6vw, 76px);
+  font-size: clamp(46px, 5.8vw, 74px);
   font-weight: 300;
-  letter-spacing: -0.07em;
-  line-height: 0.95;
+  letter-spacing: -0.068em;
+  line-height: 0.97;
 }
 
 .identity-core__body {
-  max-width: 560px;
-  margin-top: 28px;
-  color: #a8a8b0;
-  font-size: 17px;
+  max-width: 548px;
+  margin-top: 30px;
+  color: #aaabb3;
+  font-size: 16.5px;
   font-weight: 300;
   letter-spacing: -0.018em;
-  line-height: 1.72;
+  line-height: 1.76;
 }
 
 .identity-core__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 9px;
-  margin-top: 30px;
+  gap: 10px;
+  margin-top: 32px;
 }
 
 .identity-core__meta span,
 .identity-core__actions a {
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.082);
   border-radius: 999px;
-  color: #8d8d96;
-  background: rgba(255, 255, 255, 0.025);
+  color: #8b8b95;
+  background: rgba(255, 255, 255, 0.022);
   font-size: 11px;
   letter-spacing: 0.025em;
 }
@@ -3769,7 +3770,7 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 24px;
 }
 
 .identity-core__actions a {
@@ -3798,20 +3799,20 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding-top: 28px;
+  gap: 9px;
+  padding-top: 30px;
 }
 
 .identity-core__nav-item {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 38px;
-  padding: 0 13px;
+  min-height: 40px;
+  padding: 0 14px;
   border: 1px solid transparent;
   border-radius: 999px;
-  color: #62626c;
-  background: rgba(255, 255, 255, 0.018);
+  color: #5c5c66;
+  background: rgba(255, 255, 255, 0.016);
   font-size: 11px;
   letter-spacing: 0.035em;
   transition:
@@ -3836,13 +3837,13 @@ button {
 
 .identity-core__nav-item--active {
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.058);
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.052);
 }
 
 @keyframes identity-core-content-in {
-  from { opacity: 0; transform: translateY(12px) scale(0.985); filter: blur(6px); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  from { opacity: 0; transform: translate3d(18px, 14px, -24px) scale(0.982); filter: blur(7px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
 }
 
 @keyframes identity-core-drift {
@@ -4428,14 +4429,14 @@ button {
   }
 
   .profile-surface-backdrop {
-    padding: calc(var(--bar-height) + 8px) 10px calc(var(--dock-height) + 10px);
+    padding: calc(var(--bar-height) + 10px) 10px calc(var(--dock-height) + 10px);
     align-items: flex-end;
   }
 
   .profile-surface {
     width: 100%;
-    height: min(720px, calc(100svh - var(--bar-height) - var(--dock-height) - 18px));
-    border-radius: 24px;
+    height: min(700px, calc(100svh - var(--bar-height) - var(--dock-height) - 20px));
+    border-radius: 22px;
   }
 
   .profile-surface__close {
@@ -4444,13 +4445,13 @@ button {
   }
 
   .identity-core {
-    padding: 38px 22px 24px;
+    padding: 38px 22px 22px;
   }
 
   .identity-core__stage {
     grid-template-columns: 1fr;
     align-content: center;
-    gap: 20px;
+    gap: 22px;
   }
 
   .identity-core__glyph-field {
@@ -4478,14 +4479,16 @@ button {
   }
 
   .identity-core__content h2 {
-    font-size: clamp(34px, 11vw, 48px);
-    letter-spacing: -0.06em;
+    margin-top: 16px;
+    font-size: clamp(34px, 10.5vw, 47px);
+    letter-spacing: -0.058em;
+    line-height: 1;
   }
 
   .identity-core__body {
-    margin: 20px auto 0;
+    margin: 22px auto 0;
     font-size: 14px;
-    line-height: 1.62;
+    line-height: 1.66;
   }
 
   .identity-core__meta,
@@ -4496,7 +4499,7 @@ button {
   .identity-core__nav {
     justify-content: flex-start;
     gap: 7px;
-    padding-top: 18px;
+    padding-top: 20px;
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -4507,7 +4510,7 @@ button {
 
   .identity-core__nav-item {
     flex: 0 0 auto;
-    min-height: 36px;
+    min-height: 38px;
     padding: 0 12px;
     font-size: 10px;
   }
