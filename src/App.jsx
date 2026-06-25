@@ -13,6 +13,7 @@ function App() {
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
 
   const handleBootComplete = useCallback(() => setBooting(false), []);
+  const handleCloseSurface = useCallback(() => setActiveView('home'), []);
 
   const handleNavigate = useCallback((view) => {
     setActiveView(view);
@@ -41,7 +42,12 @@ function App() {
             />
           )}
 
-          {!showCanvas && <SurfacePlaceholder view={activeView} />}
+          {!showCanvas && (
+            <SurfacePlaceholder
+              view={activeView}
+              onClose={handleCloseSurface}
+            />
+          )}
 
           {showCanvas && selectedWorkspace && (
             <WorkspaceDetail projectId={selectedWorkspace} onClose={handleCloseWorkspace} />
