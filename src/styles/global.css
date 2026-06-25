@@ -123,7 +123,7 @@ button {
 }
 
 .boot-glyph {
-  color: var(--text-tertiary);
+  opacity: 0.88;
 }
 
 .boot-label {
@@ -169,7 +169,7 @@ button {
 }
 
 .system-bar__glyph {
-  color: #888890;
+  opacity: 0.7;
 }
 
 .system-bar__name {
@@ -398,7 +398,6 @@ button {
 }
 
 .home-core-glyph {
-  color: #fafaf8;
   filter: drop-shadow(0 0 16px rgba(194, 198, 224, 0.16));
 }
 
@@ -3669,7 +3668,6 @@ button {
 .identity-core__glyph {
   position: relative;
   z-index: 3;
-  color: #f3f3f0;
   filter: drop-shadow(0 0 18px rgba(215, 218, 238, 0.14));
 }
 
@@ -4259,7 +4257,7 @@ button {
   }
 
   .connect-mobile-sheet__glyph {
-    color: rgba(238, 238, 242, 0.68);
+    opacity: 0.68;
     filter: drop-shadow(0 0 10px rgba(194, 198, 224, 0.08));
   }
 
