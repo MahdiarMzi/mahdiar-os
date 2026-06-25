@@ -1,5 +1,6 @@
 import spendlyStats from '../assets/projects/spendly/spendly-04-stats.png';
 import shamsaHomeDesktop from '../assets/projects/shamsa/shamsa-01-home-desktop.png';
+import mahshidHome from '../assets/projects/mahshid/mahshid-01-home.png';
 
 function ProjectVisual({ projectId }) {
   if (projectId === 'spendly') {
@@ -29,14 +30,11 @@ function ProjectVisual({ projectId }) {
   if (projectId === 'mahshid') {
     return (
       <div className="project-visual project-visual--mahshid" aria-hidden="true">
-        <div className="project-visual__editorial-image"><span /></div>
-        <div className="project-visual__editorial-copy">
-          <i />
-          <span />
-          <span />
-          <span className="project-visual__editorial-rule" />
+        <div className="project-visual__fashion-browser">
+          <div className="project-visual__fashion-bar"><i /><i /><i /><span /></div>
+          <img src={mahshidHome} alt="" />
         </div>
-        <b>COLLECTION / 01</b>
+        <b>Luxury website · Bridal couture</b>
       </div>
     );
   }

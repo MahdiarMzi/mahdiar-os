@@ -8,6 +8,10 @@ import spendlyExpenses from '../assets/projects/spendly/spendly-05-expenses.png'
 import shamsaHomeDesktop from '../assets/projects/shamsa/shamsa-01-home-desktop.png';
 import shamsaConsultationForm from '../assets/projects/shamsa/shamsa-02-consultation-form.png';
 import shamsaMobileHome from '../assets/projects/shamsa/shamsa-03-mobile-home.png';
+import mahshidHome from '../assets/projects/mahshid/mahshid-01-home.png';
+import mahshidCollections from '../assets/projects/mahshid/mahshid-02-collections.png';
+import mahshidContact from '../assets/projects/mahshid/mahshid-04-contact.png';
+import mahshidMobile from '../assets/projects/mahshid/mahshid-05-mobile.png';
 
 const SPENDLY_SCREENSHOTS = [
   { src: spendlyOnboarding, label: 'Onboarding', alt: 'Spendly onboarding screen' },
@@ -21,6 +25,13 @@ const SHAMSA_SCREENSHOTS = [
   { src: shamsaHomeDesktop, label: 'Desktop Home', alt: 'Shamsa Immigration desktop home page' },
   { src: shamsaConsultationForm, label: 'Consultation', alt: 'Shamsa Immigration consultation intake form' },
   { src: shamsaMobileHome, label: 'Mobile Home', alt: 'Shamsa Immigration mobile home page' },
+];
+
+const MAHSHID_SCREENSHOTS = [
+  { src: mahshidHome, label: 'Home', alt: 'Mahshid Bridal Couture home page' },
+  { src: mahshidCollections, label: 'Collections', alt: 'Mahshid Bridal Couture collections page' },
+  { src: mahshidContact, label: 'Contact', alt: 'Mahshid Bridal Couture contact page' },
+  { src: mahshidMobile, label: 'Mobile', alt: 'Mahshid Bridal Couture mobile home page' },
 ];
 
 const WORKSPACE_PROJECTS = [
@@ -87,14 +98,39 @@ const WORKSPACE_PROJECTS = [
   {
     id: 'mahshid',
     title: 'Mahshid Bridal Couture',
-    type: 'Boutique Website',
+    type: 'Luxury Fashion Website',
     status: 'Live',
-    role: 'Web Developer',
-    stack: ['PHP', 'MySQL', 'HTML5', 'CSS3', 'JavaScript', 'jQuery'],
-    overview: 'A professional boutique website for a Vancouver-based bridal studio. Showcases custom wedding gowns, bridal alterations, and evening wear with a PHP/MySQL review system.',
-    problem: 'The brand needed a clean online presence that communicates elegance and lets customers submit authentic reviews.',
-    build: 'Built a responsive visual-first site with bridal gallery, contact section, and a PHP backend with MySQL database for customer review submissions. jQuery for UI interactions.',
-    outcome: 'A polished live boutique site for a real client demonstrating full-stack capability across front-end design and PHP/MySQL backend.',
+    role: 'Designer & Web Developer',
+    year: '2026',
+    stack: ['HTML', 'CSS', 'JavaScript', 'Responsive Design', 'SEO'],
+    overview: 'Designed and developed a premium website for a bridal couture brand focused on showcasing collections through elegant visual storytelling while maintaining excellent usability across desktop and mobile devices.',
+    problem: 'Luxury fashion brands depend heavily on visual presentation. The previous online experience lacked a premium feel and did not effectively showcase collections or encourage customer inquiries.',
+    solution: 'Built a modern responsive website that emphasizes large photography, refined typography, smooth interactions, and a simplified browsing experience tailored for bridal customers.',
+    keyFeatures: [
+      'Responsive Layout',
+      'Luxury Visual Design',
+      'Collection Gallery',
+      'Mobile Experience',
+      'Contact & Inquiry Flow',
+      'SEO Optimized',
+      'Fast Loading',
+      'Elegant Typography',
+    ],
+    challenges: [
+      'Balancing visual quality with performance',
+      'Responsive image layouts',
+      'Large gallery optimization',
+      'Consistent spacing system',
+      'Mobile-first polish',
+    ],
+    learned: [
+      'Premium web design principles',
+      'Image optimization',
+      'Responsive layouts',
+      'Visual hierarchy',
+      'Client-focused development',
+    ],
+    outcome: 'Delivered a polished production website that better represents the brand, improves the browsing experience, and provides a stronger foundation for customer engagement.',
     liveUrl: 'https://mahshidcouture.com/',
     githubUrl: 'https://github.com/MahdiarMzi/mahshid-bridal-couture',
   },
@@ -402,10 +438,152 @@ function ShamsaCaseStudy({ project, activeImage, onSelectImage }) {
   );
 }
 
+function MahshidGallery({ activeIndex, onSelect }) {
+  const touchStartRef = useRef(null);
+  const lastIndex = MAHSHID_SCREENSHOTS.length - 1;
+
+  const showPrevious = () => onSelect(activeIndex === 0 ? lastIndex : activeIndex - 1);
+  const showNext = () => onSelect(activeIndex === lastIndex ? 0 : activeIndex + 1);
+
+  const handleTouchStart = (event) => {
+    touchStartRef.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (event) => {
+    if (touchStartRef.current === null) return;
+    const endX = event.changedTouches[0]?.clientX ?? touchStartRef.current;
+    const distance = endX - touchStartRef.current;
+    touchStartRef.current = null;
+    if (Math.abs(distance) < 44) return;
+    if (distance > 0) showPrevious();
+    else showNext();
+  };
+
+  return (
+    <section className="mahshid-gallery" aria-label="Mahshid Bridal Couture website screenshots">
+      <div
+        className="mahshid-gallery__stage"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {MAHSHID_SCREENSHOTS.map((screenshot, index) => (
+          <img
+            key={screenshot.src}
+            src={screenshot.src}
+            alt={screenshot.alt}
+            className={`mahshid-gallery__image${index === activeIndex ? ' mahshid-gallery__image--active' : ''}`}
+            aria-hidden={index === activeIndex ? undefined : 'true'}
+          />
+        ))}
+
+        <button
+          type="button"
+          className="mahshid-gallery__arrow mahshid-gallery__arrow--previous"
+          onClick={showPrevious}
+          aria-label="Previous Mahshid screenshot"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          className="mahshid-gallery__arrow mahshid-gallery__arrow--next"
+          onClick={showNext}
+          aria-label="Next Mahshid screenshot"
+        >
+          ›
+        </button>
+
+        <div className="mahshid-gallery__caption" aria-live="polite">
+          <span>{MAHSHID_SCREENSHOTS[activeIndex].label}</span>
+          <span>{String(activeIndex + 1).padStart(2, '0')} / {String(MAHSHID_SCREENSHOTS.length).padStart(2, '0')}</span>
+        </div>
+      </div>
+
+      <div className="mahshid-gallery__thumbnails" aria-label="Choose Mahshid screenshot">
+        {MAHSHID_SCREENSHOTS.map((screenshot, index) => (
+          <button
+            type="button"
+            key={screenshot.src}
+            className={`mahshid-gallery__thumbnail${index === activeIndex ? ' mahshid-gallery__thumbnail--active' : ''}`}
+            onClick={() => onSelect(index)}
+            aria-label={`Show ${screenshot.label} screenshot`}
+            aria-pressed={index === activeIndex}
+          >
+            <img src={screenshot.src} alt="" />
+            <span>{screenshot.label}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MahshidCaseStudy({ project, activeImage, onSelectImage }) {
+  return (
+    <div className="workspace-detail__body workspace-detail__body--mahshid">
+      <MahshidGallery activeIndex={activeImage} onSelect={onSelectImage} />
+
+      <dl className="mahshid-case-study__facts">
+        <div><dt>Role</dt><dd>{project.role}</dd></div>
+        <div><dt>Type</dt><dd>{project.type}</dd></div>
+        <div><dt>Year</dt><dd>{project.year}</dd></div>
+      </dl>
+
+      <section className="mahshid-case-study__stack" aria-labelledby="mahshid-stack-title">
+        <h3 id="mahshid-stack-title">Tech Stack</h3>
+        <div>
+          {project.stack.map((technology) => <span key={technology}>{technology}</span>)}
+        </div>
+      </section>
+
+      <section className="mahshid-case-study__overview">
+        <span>01</span>
+        <div><h3>Overview</h3><p>{project.overview}</p></div>
+      </section>
+
+      <div className="mahshid-case-study__narrative">
+        <section><span>02</span><h3>Problem</h3><p>{project.problem}</p></section>
+        <section><span>03</span><h3>Solution</h3><p>{project.solution}</p></section>
+      </div>
+
+      <section className="mahshid-case-study__features">
+        <div className="mahshid-case-study__section-heading"><span>04</span><h3>Key Features</h3></div>
+        <ul>{project.keyFeatures.map((feature) => <li key={feature}>{feature}</li>)}</ul>
+      </section>
+
+      <div className="mahshid-case-study__lists">
+        <section>
+          <div className="mahshid-case-study__section-heading"><span>05</span><h3>Technical Challenges</h3></div>
+          <ul>{project.challenges.map((challenge) => <li key={challenge}>{challenge}</li>)}</ul>
+        </section>
+        <section>
+          <div className="mahshid-case-study__section-heading"><span>06</span><h3>What I Learned</h3></div>
+          <ul>{project.learned.map((lesson) => <li key={lesson}>{lesson}</li>)}</ul>
+        </section>
+      </div>
+
+      <section className="mahshid-case-study__outcome">
+        <span>07</span>
+        <div><h3>Outcome</h3><p>{project.outcome}</p></div>
+      </section>
+
+      <div className="workspace-detail__actions mahshid-case-study__actions">
+        <a href={project.liveUrl} target="_blank" rel="noreferrer" className="workspace-detail__action workspace-detail__action--primary">
+          Live Website <span aria-hidden="true">↗</span>
+        </a>
+        <a href={project.githubUrl} target="_blank" rel="noreferrer" className="workspace-detail__action">
+          GitHub Repository <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function WorkspaceDetail({ projectId, onClose }) {
   const [exiting, setExiting] = useState(false);
   const [activeSpendlyImage, setActiveSpendlyImage] = useState(0);
   const [activeShamsaImage, setActiveShamsaImage] = useState(0);
+  const [activeMahshidImage, setActiveMahshidImage] = useState(0);
   const panelRef = useRef(null);
   const project = PROJECT_BY_ID[projectId];
 
@@ -414,9 +592,13 @@ function WorkspaceDetail({ projectId, onClose }) {
   useEffect(() => {
     const handler = (event) => {
       if (event.key === 'Escape') close();
-      if (projectId !== 'spendly' && projectId !== 'shamsa') return;
-      const screenshots = projectId === 'spendly' ? SPENDLY_SCREENSHOTS : SHAMSA_SCREENSHOTS;
-      const setActiveImage = projectId === 'spendly' ? setActiveSpendlyImage : setActiveShamsaImage;
+      if (projectId !== 'spendly' && projectId !== 'shamsa' && projectId !== 'mahshid') return;
+      const galleries = {
+        spendly: { screenshots: SPENDLY_SCREENSHOTS, setActiveImage: setActiveSpendlyImage },
+        shamsa: { screenshots: SHAMSA_SCREENSHOTS, setActiveImage: setActiveShamsaImage },
+        mahshid: { screenshots: MAHSHID_SCREENSHOTS, setActiveImage: setActiveMahshidImage },
+      };
+      const { screenshots, setActiveImage } = galleries[projectId];
       if (event.key === 'ArrowLeft') {
         event.preventDefault();
         setActiveImage((current) => (
@@ -452,7 +634,7 @@ function WorkspaceDetail({ projectId, onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) close(); }}
     >
       <div
-        className={`workspace-detail${projectId === 'spendly' ? ' workspace-detail--spendly' : ''}${projectId === 'shamsa' ? ' workspace-detail--shamsa' : ''}${exiting ? ' workspace-detail--exiting' : ''}`}
+        className={`workspace-detail${projectId === 'spendly' ? ' workspace-detail--spendly' : ''}${projectId === 'shamsa' ? ' workspace-detail--shamsa' : ''}${projectId === 'mahshid' ? ' workspace-detail--mahshid' : ''}${exiting ? ' workspace-detail--exiting' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label={`${project.title} — project workspace`}
@@ -491,6 +673,12 @@ function WorkspaceDetail({ projectId, onClose }) {
             project={project}
             activeImage={activeShamsaImage}
             onSelectImage={setActiveShamsaImage}
+          />
+        ) : projectId === 'mahshid' ? (
+          <MahshidCaseStudy
+            project={project}
+            activeImage={activeMahshidImage}
+            onSelectImage={setActiveMahshidImage}
           />
         ) : (
         <div className="workspace-detail__body">
