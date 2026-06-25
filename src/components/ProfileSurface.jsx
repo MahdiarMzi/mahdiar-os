@@ -2,14 +2,22 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import CoreGlyph from './CoreGlyph';
 
 const PROJECTS = [
-  { name: 'Mahdiar OS', tag: 'This portfolio', status: 'Active', dot: 'accent' },
-  { name: 'Spendly', tag: 'iOS Finance App', status: 'Building', dot: 'live' },
-  { name: 'Job Tracker', tag: 'Web Dashboard', status: 'In Progress', dot: 'busy' },
+  { name: 'Mahdiar OS', signal: 'Identity system', state: 'Active', dot: 'accent' },
+  { name: 'Spendly', signal: 'iOS finance app', state: 'Shipping', dot: 'live' },
+  { name: 'Job Tracker', signal: 'Application workflow', state: 'Building', dot: 'busy' },
 ];
 
-const STACK = [
-  'Swift', 'SwiftUI', 'React', 'JavaScript',
-  'Python', 'Java', 'HTML', 'CSS', 'SQL', 'Git',
+const EXPERTISE = [
+  { group: 'Primary', items: ['React interfaces', 'SwiftUI apps', 'Product UI'] },
+  { group: 'Secondary', items: ['JavaScript', 'Python', 'Java', 'SQL'] },
+  { group: 'Tools', items: ['Git', 'Vite', 'Xcode', 'Figma'] },
+];
+
+const COMMANDS = [
+  { label: 'GitHub', href: 'https://github.com/MahdiarMzi', external: true },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/mahdiar-mazinani/', external: true },
+  { label: 'Resume', disabled: true },
+  { label: 'Email', href: 'mailto:mahdiarmazinani@yahoo.com' },
 ];
 
 function ProfileSurface({ onClose }) {
@@ -45,14 +53,10 @@ function ProfileSurface({ onClose }) {
         onAnimationEnd={handleAnimationEnd}
       >
         <header className="profile-surface__header">
-          <CoreGlyph size={34} className="profile-surface__glyph" />
-          <div className="profile-surface__identity">
-            <h2 className="profile-surface__name">Mahdiar Mazinani</h2>
-            <p className="profile-surface__subtitle">Computer Studies · Vancouver, BC</p>
+          <div className="profile-surface__identity-lockup">
+            <CoreGlyph size={38} className="profile-surface__glyph" />
+            <span className="profile-surface__mode">Identity Surface</span>
           </div>
-          <span className="profile-surface__availability" aria-label="Status: Open to internships">
-            Open to Internships
-          </span>
           <button
             className="workspace-detail__close"
             onClick={close}
@@ -65,79 +69,107 @@ function ProfileSurface({ onClose }) {
         </header>
 
         <div className="profile-surface__body">
-
-          <div className="profile-surface__statement-block">
-            <p className="profile-surface__statement">Building real software.</p>
-            <p className="profile-surface__statement-sub">
-              Focused on clean products and honest code.
-            </p>
-          </div>
-
-          <div className="profile-surface__block">
-            <span className="profile-surface__block-label">Now</span>
-            <div className="profile-surface__projects">
-              {PROJECTS.map((p) => (
-                <div key={p.name} className="profile-surface__project-row">
-                  <span
-                    className={`profile-surface__build-dot profile-surface__build-dot--${p.dot}`}
-                    aria-hidden="true"
-                  />
-                  <span className="profile-surface__project-name">{p.name}</span>
-                  <span className="profile-surface__project-tag">{p.tag}</span>
-                  <span className="profile-surface__project-status">{p.status}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="profile-surface__block">
-            <span className="profile-surface__block-label">Education</span>
-            <div className="profile-surface__edu-row">
-              <div>
-                <p className="profile-surface__edu-school">Langara College</p>
-                <p className="profile-surface__edu-detail">Computer Studies Diploma · Expected 2027</p>
+          <section className="profile-surface__hero" aria-labelledby="profile-title">
+            <div>
+              <p className="profile-surface__eyebrow">Identity</p>
+              <h2 id="profile-title" className="profile-surface__name">Mahdiar Mazinani</h2>
+              <div className="profile-surface__origin">
+                <span>Computer Studies</span>
+                <span>Langara College</span>
+                <span>Vancouver, BC</span>
               </div>
-              <span className="profile-surface__honour">Dean&apos;s Honour Roll · Spring 2025</span>
             </div>
+
+            <div className="profile-surface__availability" aria-label="Status: Open to Software Engineering Internships">
+              <span className="profile-surface__availability-dot" aria-hidden="true" />
+              <span>Open to Software Engineering Internships</span>
+            </div>
+          </section>
+
+          <section className="profile-surface__summary" aria-labelledby="profile-summary">
+            <span id="profile-summary" className="profile-surface__section-label">System Summary</span>
+            <p>
+              I’m a Computer Studies student in Vancouver building practical software with a calm,
+              product-minded approach. I care about interfaces that feel clear, systems that stay
+              understandable, and projects that become useful beyond the first demo.
+            </p>
+          </section>
+
+          <div className="profile-surface__grid">
+            <section className="profile-surface__panel profile-surface__panel--focus" aria-labelledby="profile-focus">
+              <span id="profile-focus" className="profile-surface__section-label">Current Focus</span>
+              <div className="profile-surface__systems">
+                {PROJECTS.map((p) => (
+                  <div key={p.name} className="profile-surface__system-row">
+                    <span
+                      className={`profile-surface__build-dot profile-surface__build-dot--${p.dot}`}
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <span className="profile-surface__system-name">{p.name}</span>
+                      <span className="profile-surface__system-signal">{p.signal}</span>
+                    </div>
+                    <span className="profile-surface__system-state">{p.state}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="profile-surface__panel profile-surface__panel--expertise" aria-labelledby="profile-expertise">
+              <span id="profile-expertise" className="profile-surface__section-label">Expertise</span>
+              <div className="profile-surface__expertise">
+                {EXPERTISE.map((group) => (
+                  <div key={group.group} className="profile-surface__expertise-group">
+                    <span>{group.group}</span>
+                    <p>{group.items.join(' · ')}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="profile-surface__panel profile-surface__panel--education" aria-labelledby="profile-education">
+              <span id="profile-education" className="profile-surface__section-label">Education</span>
+              <div className="profile-surface__education">
+                <div>
+                  <span>Program</span>
+                  <p>Computer Studies · Langara College</p>
+                </div>
+                <div>
+                  <span>Expected Graduation</span>
+                  <p>2027</p>
+                </div>
+                <div>
+                  <span>Recognition</span>
+                  <p>Dean&apos;s Honour Roll</p>
+                </div>
+              </div>
+            </section>
           </div>
 
-          <div className="profile-surface__block">
-            <span className="profile-surface__block-label">Stack</span>
-            <div className="profile-surface__flat-chips">
-              {STACK.map((tag) => (
-                <span key={tag} className="profile-surface__chip">{tag}</span>
+          <section className="profile-surface__commands" aria-labelledby="profile-actions">
+            <span id="profile-actions" className="profile-surface__section-label">Actions</span>
+            <div className="profile-surface__command-row">
+              {COMMANDS.map((command) => (
+                command.disabled ? (
+                  <span key={command.label} className="profile-surface__command profile-surface__command--disabled">
+                    {command.label}
+                    <span aria-hidden="true">Pending</span>
+                  </span>
+                ) : (
+                  <a
+                    key={command.label}
+                    href={command.href}
+                    target={command.external ? '_blank' : undefined}
+                    rel={command.external ? 'noreferrer' : undefined}
+                    className="profile-surface__command"
+                  >
+                    {command.label}
+                    <span aria-hidden="true">{command.external ? '↗' : '→'}</span>
+                  </a>
+                )
               ))}
             </div>
-          </div>
-
-          <div className="profile-surface__links">
-            <a
-              href="https://github.com/MahdiarMzi"
-              target="_blank"
-              rel="noreferrer"
-              className="workspace-detail__action workspace-detail__action--primary"
-            >
-              GitHub <span aria-hidden="true">↗</span>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/mahdiar-mazinani/"
-              target="_blank"
-              rel="noreferrer"
-              className="workspace-detail__action"
-            >
-              LinkedIn <span aria-hidden="true">↗</span>
-            </a>
-            <a
-              href="mailto:mahdiarmazinani@yahoo.com"
-              className="workspace-detail__action"
-            >
-              Email <span aria-hidden="true">↗</span>
-            </a>
-            <span className="workspace-detail__action workspace-detail__action--soon">
-              Resume Soon
-            </span>
-          </div>
-
+          </section>
         </div>
       </div>
     </div>
