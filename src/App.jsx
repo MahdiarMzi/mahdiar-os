@@ -57,7 +57,7 @@ function App() {
           )}
 
           {showCanvas && selectedWorkspace && (
-            <WorkspaceDetail projectId={selectedWorkspace} onClose={handleCloseWorkspace} />
+            <WorkspaceDetail key={selectedWorkspace} projectId={selectedWorkspace} onClose={handleCloseWorkspace} />
           )}
 
           <Dock activeView={activeView} onNavigate={handleNavigate} />
