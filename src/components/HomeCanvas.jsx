@@ -818,12 +818,23 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
           <i />
         </div>
         <svg className="home-idle__hud-lines" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M500 314 C358 318 286 300 188 294" />
-          <path d="M500 306 C380 256 314 188 232 138" />
-          <path d="M500 326 C398 392 342 438 244 486" />
-          <path d="M500 306 C620 244 696 170 786 122" />
-          <path d="M500 326 C612 398 682 452 784 496" />
-          <path d="M500 314 C646 320 730 304 822 298" />
+          <g className="home-idle__hud-paths">
+            <path d="M500 314 C358 318 286 300 188 294" />
+            <path d="M500 306 C380 256 314 188 232 138" />
+            <path d="M500 326 C398 392 342 438 244 486" />
+            <path d="M500 306 C620 244 696 170 786 122" />
+            <path d="M500 326 C612 398 682 452 784 496" />
+            <path d="M500 314 C646 320 730 304 822 298" />
+          </g>
+          <g className="home-idle__hud-endpoints">
+            <circle cx="188" cy="294" r="2" />
+            <circle cx="232" cy="138" r="2" />
+            <circle cx="244" cy="486" r="2" />
+            <circle cx="786" cy="122" r="2" />
+            <circle cx="784" cy="496" r="2" />
+            <circle cx="822" cy="298" r="2" />
+          </g>
+          <circle className="home-idle__hud-origin" cx="500" cy="314" r="3" />
         </svg>
 
         <div className="home-idle__callouts" aria-label="System information">

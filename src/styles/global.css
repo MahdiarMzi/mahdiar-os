@@ -697,7 +697,7 @@ button {
   transform: translate(calc(var(--idle-x) * -7px), calc(var(--idle-y) * -5px));
 }
 
-.home-idle__hud-lines path {
+.home-idle__hud-paths path {
   fill: none;
   stroke: rgba(236, 236, 240, 0.08);
   stroke-width: 0.7;
@@ -707,14 +707,34 @@ button {
   animation: idle-hud-line-flow 18s linear infinite;
 }
 
-.home-idle__hud-lines path:nth-child(2n) {
+.home-idle__hud-paths path:nth-child(2n) {
   stroke-opacity: 0.72;
   animation-duration: 24s;
   animation-direction: reverse;
 }
 
-.home-idle__hud-lines path:nth-child(3n) {
+.home-idle__hud-paths path:nth-child(3n) {
   animation-delay: -8s;
+}
+
+.home-idle__hud-endpoints circle,
+.home-idle__hud-origin {
+  fill: rgba(238, 238, 242, 0.18);
+  stroke: rgba(238, 238, 242, 0.16);
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+  animation: idle-endpoint-breathe 12s ease-in-out infinite;
+}
+
+.home-idle__hud-endpoints circle:nth-child(2) { animation-delay: -2s; }
+.home-idle__hud-endpoints circle:nth-child(3) { animation-delay: -4s; }
+.home-idle__hud-endpoints circle:nth-child(4) { animation-delay: -6s; }
+.home-idle__hud-endpoints circle:nth-child(5) { animation-delay: -8s; }
+.home-idle__hud-endpoints circle:nth-child(6) { animation-delay: -10s; }
+
+.home-idle__hud-origin {
+  fill: rgba(238, 238, 242, 0.1);
+  animation-duration: 16s;
 }
 
 .home-idle__callouts {
@@ -736,11 +756,13 @@ button {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   pointer-events: auto;
-  animation: idle-callout-settle 900ms ease both;
   transition:
     opacity var(--duration-fast) ease,
     transform var(--duration-fast) ease,
     filter var(--duration-fast) ease;
+  animation:
+    idle-callout-settle 900ms ease both,
+    idle-callout-cycle 36s ease-in-out infinite;
 }
 
 .home-idle__callout::before {
@@ -795,6 +817,18 @@ button {
 .home-idle__callout--location { top: 12.2%; right: 14.8%; text-align: right; animation-delay: 260ms; }
 .home-idle__callout--version { bottom: 16%; right: 15.2%; text-align: right; animation-delay: 320ms; }
 .home-idle__callout--target { top: 44.4%; right: 10.8%; text-align: right; animation-delay: 380ms; }
+
+.home-idle__callout--status::before {
+  border-color: rgba(62, 207, 142, 0.22);
+  background: rgba(62, 207, 142, 0.12);
+}
+
+.home-idle__callout--status { animation-delay: 80ms, -36s; }
+.home-idle__callout--focus { animation-delay: 140ms, -30s; }
+.home-idle__callout--mission { animation-delay: 200ms, -24s; }
+.home-idle__callout--location { animation-delay: 260ms, -18s; }
+.home-idle__callout--version { animation-delay: 320ms, -12s; }
+.home-idle__callout--target { animation-delay: 380ms, -6s; }
 
 .home-idle__callout--focus::before,
 .home-idle__callout--status::before,
@@ -1054,6 +1088,11 @@ button {
   50% { opacity: 0.76; }
 }
 
+@keyframes idle-endpoint-breathe {
+  0%, 100% { opacity: 0.34; }
+  48%, 56% { opacity: 0.78; }
+}
+
 @keyframes idle-guide-light {
   0%, 64%, 100% { opacity: 0; transform: translate(-50%, -50%) rotate(0deg) translateX(256px); }
   70% { opacity: 0.26; }
@@ -1067,6 +1106,11 @@ button {
 @keyframes idle-callout-settle {
   from { opacity: 0; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes idle-callout-cycle {
+  0%, 78%, 100% { opacity: 0.74; }
+  9%, 18% { opacity: 1; }
 }
 
 @keyframes idle-micro-orbit {
