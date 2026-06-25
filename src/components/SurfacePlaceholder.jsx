@@ -16,10 +16,12 @@ const CONNECT_ENDPOINTS = [
     label: 'Email',
     meta: EMAIL,
     type: 'copy',
-    x: 248,
-    y: 145,
-    anchorX: 364,
-    anchorY: 177,
+    x: 150,
+    y: 178,
+    portX: 414,
+    portY: 258,
+    bendX: 294,
+    align: 'left',
   },
   {
     id: 'github',
@@ -28,10 +30,12 @@ const CONNECT_ENDPOINTS = [
     type: 'link',
     href: GITHUB_URL,
     ariaLabel: 'Open MahdiarMzi on GitHub in a new tab',
-    x: 552,
-    y: 152,
-    anchorX: 552,
-    anchorY: 184,
+    x: 750,
+    y: 178,
+    portX: 486,
+    portY: 258,
+    bendX: 606,
+    align: 'right',
   },
   {
     id: 'linkedin',
@@ -40,24 +44,32 @@ const CONNECT_ENDPOINTS = [
     type: 'link',
     href: LINKEDIN_URL,
     ariaLabel: 'Open Mahdiar Mazinani on LinkedIn in a new tab',
-    x: 252,
-    y: 364,
-    anchorX: 368,
-    anchorY: 396,
+    x: 150,
+    y: 382,
+    portX: 414,
+    portY: 302,
+    bendX: 294,
+    align: 'left',
   },
   {
     id: 'resume',
     label: 'Resume',
-    meta: RESUME_URL ? 'PDF' : 'PDF offline',
+    meta: RESUME_URL ? 'PDF' : 'PDF unavailable',
     type: 'download',
     href: RESUME_URL,
     disabled: !RESUME_URL,
-    x: 548,
-    y: 356,
-    anchorX: 548,
-    anchorY: 388,
+    x: 750,
+    y: 382,
+    portX: 486,
+    portY: 302,
+    bendX: 606,
+    align: 'right',
   },
 ];
+
+const getConnectionPath = ({ portX, portY, bendX, x, y }) => (
+  `M ${portX} ${portY} H ${bendX} V ${y} H ${x}`
+);
 
 function ConnectSurface({ onClose }) {
   const [activeNode, setActiveNode] = useState(null);
@@ -98,7 +110,15 @@ function ConnectSurface({ onClose }) {
   const handleNodeLeave = useCallback(() => setActiveNode(null), []);
 
   const renderEndpoint = (endpoint) => {
-    const className = `connect-node connect-node--${endpoint.id}`;
+    const active = activeNode === endpoint.id;
+    const quiet = activeNode && !active;
+    const className = [
+      'connect-node',
+      `connect-node--${endpoint.id}`,
+      `connect-node--${endpoint.align}`,
+      active ? 'connect-node--active' : '',
+      quiet ? 'connect-node--quiet' : '',
+    ].filter(Boolean).join(' ');
     const commonProps = {
       className,
       onMouseEnter: () => handleNodeEnter(endpoint.id),
@@ -167,30 +187,42 @@ function ConnectSurface({ onClose }) {
   return (
     <section
       className="connect-surface"
-      aria-label="Connect — communication endpoint graph"
+      aria-label="Connect — communication mode"
       ref={surfaceRef}
       tabIndex={-1}
       data-active-node={activeNode || 'none'}
     >
-      <div className="connect-surface__field" aria-hidden="true" />
+      <div className="connect-surface__mode" aria-hidden="true">
+        <span>Communication mode</span>
+        <i />
+      </div>
 
-      <div className="connect-graph" role="group" aria-label="Communication endpoints">
-        <svg className="connect-graph__lines" viewBox="0 0 800 520" aria-hidden="true">
+      <div className="connect-field" role="group" aria-label="Communication endpoints">
+        <svg className="connect-field__routes" viewBox="0 0 900 560" aria-hidden="true">
+          <rect className="connect-field__frame" x="70" y="76" width="760" height="408" rx="2" />
+          <line className="connect-field__axis connect-field__axis--horizontal" x1="108" y1="280" x2="792" y2="280" />
+          <line className="connect-field__axis connect-field__axis--vertical" x1="450" y1="112" x2="450" y2="448" />
+
           {CONNECT_ENDPOINTS.map((endpoint) => (
-            <line
+            <g
               key={endpoint.id}
-              className={`connect-graph__line connect-graph__line--${endpoint.id}`}
-              x1="400"
-              y1="260"
-              x2={endpoint.anchorX}
-              y2={endpoint.anchorY}
-            />
+              className={[
+                'connect-field__route',
+                activeNode === endpoint.id ? 'connect-field__route--active' : '',
+                activeNode && activeNode !== endpoint.id ? 'connect-field__route--quiet' : '',
+              ].filter(Boolean).join(' ')}
+            >
+              <path d={getConnectionPath(endpoint)} />
+              <circle className="connect-field__port" cx={endpoint.portX} cy={endpoint.portY} r="3.2" />
+              <circle className="connect-field__terminal" cx={endpoint.x} cy={endpoint.y} r="4.4" />
+            </g>
           ))}
         </svg>
 
-        <div className="connect-graph__core" aria-hidden="true">
-          <CoreGlyph size={76} className="connect-graph__glyph" />
-          <span>Connect</span>
+        <div className="connect-core" aria-hidden="true">
+          <span className="connect-core__plate" />
+          <CoreGlyph size={82} className="connect-core__glyph" />
+          <span className="connect-core__label">Connect</span>
         </div>
 
         {CONNECT_ENDPOINTS.map(renderEndpoint)}

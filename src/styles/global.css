@@ -1201,30 +1201,30 @@ button {
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* ─── CONNECT GRAPH ─────────────────────────────── */
+/* ─── CONNECT COMMUNICATION MODE ────────────────── */
 .surface-placeholder--connect {
   padding-right: 24px;
   padding-left: 24px;
-  background: rgba(8, 8, 11, 0.38);
+  background: rgba(12, 12, 16, 0.54);
 }
 
 .surface-placeholder--connect::before {
   position: absolute;
   inset: var(--bar-height) 0 var(--dock-height);
   background:
-    linear-gradient(90deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.02) 50%, transparent calc(50% + 1px)),
-    linear-gradient(180deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.016) 50%, transparent calc(50% + 1px));
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.028) 50%, transparent calc(50% + 1px)),
+    linear-gradient(180deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.02) 50%, transparent calc(50% + 1px));
   content: '';
-  opacity: 0.7;
+  opacity: 0.78;
   pointer-events: none;
-  mask-image: radial-gradient(ellipse 42% 52% at center, black, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 42% 52% at center, black, transparent 78%);
+  mask-image: radial-gradient(ellipse 48% 54% at center, black, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 48% 54% at center, black, transparent 78%);
 }
 
 .connect-surface {
   position: relative;
-  width: min(900px, 100%);
-  height: min(580px, calc(100vh - var(--bar-height) - var(--dock-height) - 48px));
+  width: min(1040px, 100%);
+  height: min(640px, calc(100vh - var(--bar-height) - var(--dock-height) - 44px));
   min-height: 460px;
   border: 0;
   background: transparent;
@@ -1232,40 +1232,38 @@ button {
   outline: none;
 }
 
-.connect-surface__field {
+.connect-surface__mode {
   position: absolute;
-  inset: 0;
+  top: 34px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: rgba(168, 168, 176, 0.58);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
-.connect-surface__field::before,
-.connect-surface__field::after {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 520px;
-  height: 318px;
-  border: 1px solid rgba(235, 236, 242, 0.032);
+.connect-surface__mode i {
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  content: '';
-  transform: translate(-50%, -50%) rotate(-7deg);
+  background: rgba(62, 207, 142, 0.72);
 }
 
-.connect-surface__field::after {
-  width: 720px;
-  height: 440px;
-  border-color: rgba(235, 236, 242, 0.022);
-  transform: translate(-50%, -50%) rotate(8deg);
-}
-
-.connect-graph {
+.connect-field {
   position: absolute;
   inset: 0;
-  width: 800px;
-  height: 520px;
+  width: 900px;
+  height: 560px;
   margin: auto;
 }
 
-.connect-graph__lines {
+.connect-field__routes {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1274,53 +1272,99 @@ button {
   pointer-events: none;
 }
 
-.connect-graph__line {
-  stroke: rgba(232, 233, 240, 0.18);
+.connect-field__frame {
+  fill: none;
+  stroke: rgba(232, 233, 240, 0.07);
   stroke-width: 1;
-  stroke-linecap: round;
-  stroke-dasharray: 1 8;
+  vector-effect: non-scaling-stroke;
+}
+
+.connect-field__axis {
+  stroke: rgba(232, 233, 240, 0.052);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.connect-field__route {
+  opacity: 1;
+  transition: opacity var(--duration-standard) ease;
+}
+
+.connect-field__route path {
+  fill: none;
+  stroke: rgba(232, 233, 240, 0.22);
+  stroke-width: 1;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
   vector-effect: non-scaling-stroke;
   transition:
     stroke var(--duration-standard) ease,
-    opacity var(--duration-standard) ease,
-    stroke-dasharray var(--duration-standard) ease;
+    stroke-width var(--duration-standard) ease;
 }
 
-.connect-surface[data-active-node='email'] .connect-graph__line--email,
-.connect-surface[data-active-node='github'] .connect-graph__line--github,
-.connect-surface[data-active-node='linkedin'] .connect-graph__line--linkedin,
-.connect-surface[data-active-node='resume'] .connect-graph__line--resume {
-  stroke: rgba(244, 244, 241, 0.56);
-  stroke-dasharray: 1 5;
+.connect-field__port,
+.connect-field__terminal {
+  fill: rgba(16, 16, 20, 0.96);
+  stroke: rgba(232, 233, 240, 0.3);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition:
+    fill var(--duration-standard) ease,
+    stroke var(--duration-standard) ease,
+    r var(--duration-standard) ease;
 }
 
-.connect-graph__core {
+.connect-field__route--quiet {
+  opacity: 0.36;
+}
+
+.connect-field__route--active path {
+  stroke: rgba(244, 244, 241, 0.7);
+  stroke-width: 1.35;
+}
+
+.connect-field__route--active .connect-field__port,
+.connect-field__route--active .connect-field__terminal {
+  fill: rgba(244, 244, 241, 0.86);
+  stroke: rgba(244, 244, 241, 0.86);
+}
+
+.connect-core {
   position: absolute;
-  top: 260px;
-  left: 400px;
+  top: 280px;
+  left: 450px;
   display: grid;
   place-items: center;
-  gap: 13px;
-  color: rgba(244, 244, 241, 0.92);
+  gap: 15px;
+  width: 188px;
+  height: 168px;
+  color: rgba(244, 244, 241, 0.94);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
-.connect-graph__core::before {
+.connect-core__plate {
   position: absolute;
-  width: 154px;
-  height: 112px;
-  border: 1px solid rgba(255, 255, 255, 0.035);
-  border-radius: 50%;
-  content: '';
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  background: rgba(19, 19, 24, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 24px 52px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
 }
 
-.connect-graph__glyph {
-  filter: drop-shadow(0 0 12px rgba(194, 198, 224, 0.1));
+.connect-core__glyph {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 14px rgba(194, 198, 224, 0.12));
 }
 
-.connect-graph__core span {
-  color: rgba(190, 190, 197, 0.62);
+.connect-core__label {
+  position: relative;
+  z-index: 1;
+  color: rgba(201, 201, 207, 0.7);
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.18em;
@@ -1334,24 +1378,45 @@ button {
   display: inline-grid;
   grid-template-columns: auto minmax(0, max-content);
   align-items: center;
-  gap: 11px;
-  min-width: 138px;
-  max-width: 235px;
-  padding: 0;
-  color: #9f9fa7;
+  gap: 14px;
+  min-width: 180px;
+  max-width: 280px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(20, 20, 25, 0.68);
+  color: #b9b9c0;
   text-align: left;
   text-decoration: none;
   transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition:
     color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    background var(--duration-fast) ease,
     transform var(--duration-standard) cubic-bezier(0.22, 1, 0.36, 1),
     opacity var(--duration-fast) ease;
 }
 
+.connect-node--left {
+  grid-template-columns: minmax(0, max-content) auto;
+}
+
+.connect-node--left .connect-node__marker {
+  order: 2;
+}
+
+.connect-node--left .connect-node__text {
+  text-align: right;
+}
+
 .connect-node:hover,
-.connect-node:focus-visible {
+.connect-node:focus-visible,
+.connect-node--active {
   color: var(--text-primary);
-  transform: translate(-50%, calc(-50% - 2px));
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(29, 29, 35, 0.84);
+  transform: translate(-50%, -50%) scale(1.035);
 }
 
 .connect-node:focus-visible {
@@ -1360,17 +1425,20 @@ button {
   border-radius: 4px;
 }
 
+.connect-node--quiet {
+  opacity: 0.42;
+}
+
 .connect-node[aria-disabled='true'] {
-  color: #5a5a62;
+  color: #8a8a92;
   cursor: not-allowed;
 }
 
 .connect-node__marker {
   position: relative;
-  width: 7px;
-  height: 7px;
+  width: 11px;
+  height: 11px;
   border: 1px solid currentColor;
-  border-radius: 50%;
   opacity: 0.62;
   transition:
     opacity var(--duration-fast) ease,
@@ -1380,8 +1448,7 @@ button {
 
 .connect-node__marker::after {
   position: absolute;
-  inset: 2px;
-  border-radius: inherit;
+  inset: 3px;
   background: currentColor;
   content: '';
   opacity: 0;
@@ -1389,13 +1456,15 @@ button {
 }
 
 .connect-node:hover .connect-node__marker,
-.connect-node:focus-visible .connect-node__marker {
+.connect-node:focus-visible .connect-node__marker,
+.connect-node--active .connect-node__marker {
   opacity: 0.96;
   transform: scale(1.12);
 }
 
 .connect-node:hover .connect-node__marker::after,
-.connect-node:focus-visible .connect-node__marker::after {
+.connect-node:focus-visible .connect-node__marker::after,
+.connect-node--active .connect-node__marker::after {
   opacity: 0.7;
 }
 
@@ -1406,7 +1475,7 @@ button {
 
 .connect-node__label {
   color: currentColor;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   letter-spacing: 0.03em;
 }
@@ -1420,8 +1489,9 @@ button {
 }
 
 .connect-node:hover .connect-node__meta,
-.connect-node:focus-visible .connect-node__meta {
-  color: #92929a;
+.connect-node:focus-visible .connect-node__meta,
+.connect-node--active .connect-node__meta {
+  color: #a4a4ac;
 }
 
 .connect-notice {
@@ -3154,41 +3224,42 @@ button {
     width: 100%;
     height: min(620px, calc(100svh - var(--bar-height) - var(--dock-height)));
     min-height: 520px;
+    overflow: hidden;
   }
 
-  .connect-graph {
-    width: 360px;
-    height: 520px;
-    transform: scale(0.94);
+  .connect-surface__mode {
+    top: 18px;
+    white-space: nowrap;
+  }
+
+  .connect-field {
+    width: 900px;
+    height: 560px;
+    transform: scale(0.43);
     transform-origin: center;
   }
 
-  .connect-graph__lines {
-    display: none;
+  .connect-field__frame {
+    stroke: rgba(232, 233, 240, 0.08);
   }
 
-  .connect-graph__core {
-    top: 252px;
-    left: 180px;
+  .connect-core {
+    top: 280px;
+    left: 450px;
   }
 
   .connect-node {
-    min-width: 148px;
-    max-width: 210px;
+    min-width: 190px;
+    max-width: 240px;
   }
-
-  .connect-node--email { --node-x: 180px !important; --node-y: 84px !important; }
-  .connect-node--github { --node-x: 180px !important; --node-y: 180px !important; }
-  .connect-node--linkedin { --node-x: 180px !important; --node-y: 338px !important; }
-  .connect-node--resume { --node-x: 180px !important; --node-y: 434px !important; }
 
   .connect-node:hover,
   .connect-node:focus-visible {
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1.035);
   }
 
   .connect-notice {
-    top: calc(50% + 62px);
+    top: calc(50% + 88px);
     width: 100%;
     text-align: center;
   }
