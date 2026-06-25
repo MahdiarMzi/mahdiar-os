@@ -791,6 +791,16 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
           <span />
           <span />
           <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="home-idle__command-field" aria-hidden="true">
+          <b />
+          <b />
+          <b />
+          <b />
         </div>
         <div className="home-idle__depth" aria-hidden="true">
           <span />
@@ -846,6 +856,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
           <button type="button" className="home-idle__work-button" onClick={onOpenWork}>
             <span>Open Work</span>
             <span className="home-idle__work-arrow" aria-hidden="true">→</span>
+            <span className="home-idle__work-response" aria-hidden="true" />
           </button>
         </main>
       </div>
