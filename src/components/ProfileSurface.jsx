@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import CoreGlyph from './CoreGlyph';
 
-const PROGRAMMING = ['Java', 'Python', 'JavaScript', 'HTML', 'CSS', 'SQL'];
-const TOOLS = ['Git', 'GitHub', 'VS Code', 'Claude Code', 'Codex'];
+const PROJECTS = [
+  { name: 'Mahdiar OS', tag: 'This portfolio', status: 'Active', dot: 'accent' },
+  { name: 'Spendly', tag: 'iOS Finance App', status: 'Building', dot: 'live' },
+  { name: 'Job Tracker', tag: 'Web Dashboard', status: 'In Progress', dot: 'busy' },
+];
 
-const BUILDING = [
-  { name: 'Mahdiar OS', desc: 'This portfolio', dot: 'accent' },
-  { name: 'Job Tracker', desc: 'In progress', dot: 'busy' },
-  { name: 'Spendly', desc: 'Improving', dot: 'live' },
-  { name: 'React Ecosystem', desc: 'Learning', dot: 'accent' },
-  { name: 'Software Engineering Internship', desc: 'Preparing', dot: 'dim' },
+const STACK = [
+  'Swift', 'SwiftUI', 'React', 'JavaScript',
+  'Python', 'Java', 'HTML', 'CSS', 'SQL', 'Git',
 ];
 
 function ProfileSurface({ onClose }) {
@@ -24,9 +24,7 @@ function ProfileSurface({ onClose }) {
     return () => document.removeEventListener('keydown', handler);
   }, [close]);
 
-  useEffect(() => {
-    panelRef.current?.focus();
-  }, []);
+  useEffect(() => { panelRef.current?.focus(); }, []);
 
   const handleAnimationEnd = useCallback((e) => {
     if (exiting && e.target === panelRef.current) onClose();
@@ -47,14 +45,14 @@ function ProfileSurface({ onClose }) {
         onAnimationEnd={handleAnimationEnd}
       >
         <header className="profile-surface__header">
-          <CoreGlyph size={36} className="profile-surface__glyph" />
+          <CoreGlyph size={34} className="profile-surface__glyph" />
           <div className="profile-surface__identity">
             <h2 className="profile-surface__name">Mahdiar Mazinani</h2>
-            <p className="profile-surface__subtitle">Computer Studies Student · Vancouver, BC</p>
-            <span className="profile-surface__availability" aria-label="Status: Available for Internship">
-              Available for Internship
-            </span>
+            <p className="profile-surface__subtitle">Computer Studies · Vancouver, BC</p>
           </div>
+          <span className="profile-surface__availability" aria-label="Status: Open to internships">
+            Open to Internships
+          </span>
           <button
             className="workspace-detail__close"
             onClick={close}
@@ -68,111 +66,51 @@ function ProfileSurface({ onClose }) {
 
         <div className="profile-surface__body">
 
-          <section className="profile-surface__section" aria-labelledby="ps-about">
-            <h3 id="ps-about" className="profile-surface__section-label">About</h3>
-            <p className="profile-surface__text">
-              I build real software products. I&apos;m a Computer Studies student at Langara College
-              in Vancouver, growing through projects that ship and problems worth solving.
+          <div className="profile-surface__statement-block">
+            <p className="profile-surface__statement">Building real software.</p>
+            <p className="profile-surface__statement-sub">
+              Focused on clean products and honest code.
             </p>
-            <p className="profile-surface__text">
-              Most of what I know I&apos;ve learned by doing — a native iOS finance app, production
-              websites for real clients, and this portfolio, which is itself a project. I care about
-              clean interfaces, thoughtful experiences, and code that&apos;s honest about what it does.
-            </p>
-            <p className="profile-surface__text">
-              I&apos;m looking for a software engineering internship where I can contribute from day one,
-              learn from the people around me, and be part of building something worth shipping.
-            </p>
-          </section>
+          </div>
 
-          <section className="profile-surface__section" aria-labelledby="ps-building">
-            <h3 id="ps-building" className="profile-surface__section-label">Currently Building</h3>
-            <ul className="profile-surface__building-list">
-              {BUILDING.map((item) => (
-                <li key={item.name}>
-                  <span className={`profile-surface__build-dot profile-surface__build-dot--${item.dot}`} aria-hidden="true" />
-                  <span className="profile-surface__build-name">{item.name}</span>
-                  <span className="profile-surface__build-desc">{item.desc}</span>
-                </li>
+          <div className="profile-surface__block">
+            <span className="profile-surface__block-label">Now</span>
+            <div className="profile-surface__projects">
+              {PROJECTS.map((p) => (
+                <div key={p.name} className="profile-surface__project-row">
+                  <span
+                    className={`profile-surface__build-dot profile-surface__build-dot--${p.dot}`}
+                    aria-hidden="true"
+                  />
+                  <span className="profile-surface__project-name">{p.name}</span>
+                  <span className="profile-surface__project-tag">{p.tag}</span>
+                  <span className="profile-surface__project-status">{p.status}</span>
+                </div>
               ))}
-            </ul>
-          </section>
+            </div>
+          </div>
 
-          <section className="profile-surface__section" aria-labelledby="ps-education">
-            <h3 id="ps-education" className="profile-surface__section-label">Education</h3>
-            <div className="profile-surface__edu">
-              <div className="profile-surface__edu-main">
+          <div className="profile-surface__block">
+            <span className="profile-surface__block-label">Education</span>
+            <div className="profile-surface__edu-row">
+              <div>
                 <p className="profile-surface__edu-school">Langara College</p>
-                <p className="profile-surface__edu-program">Computer Studies Diploma</p>
+                <p className="profile-surface__edu-detail">Computer Studies Diploma · Expected 2027</p>
               </div>
-              <div className="profile-surface__edu-meta">
-                <span>Expected 2027</span>
-                <span className="profile-surface__honour">Dean&apos;s Honour Roll · Spring 2025</span>
-              </div>
+              <span className="profile-surface__honour">Dean&apos;s Honour Roll · Spring 2025</span>
             </div>
-          </section>
+          </div>
 
-          <section className="profile-surface__section" aria-labelledby="ps-stack">
-            <h3 id="ps-stack" className="profile-surface__section-label">Tech Stack</h3>
-            <div className="profile-surface__stack-grid">
-              <div>
-                <p className="profile-surface__stack-category">Programming</p>
-                <div className="profile-surface__chips">
-                  {PROGRAMMING.map((tag) => (
-                    <span key={tag} className="workspace-detail__tag">{tag}</span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="profile-surface__stack-category">Tools</p>
-                <div className="profile-surface__chips">
-                  {TOOLS.map((tag) => (
-                    <span key={tag} className="workspace-detail__tag">{tag}</span>
-                  ))}
-                </div>
-              </div>
+          <div className="profile-surface__block">
+            <span className="profile-surface__block-label">Stack</span>
+            <div className="profile-surface__flat-chips">
+              {STACK.map((tag) => (
+                <span key={tag} className="profile-surface__chip">{tag}</span>
+              ))}
             </div>
-          </section>
+          </div>
 
-          <section className="profile-surface__section" aria-labelledby="ps-certs">
-            <h3 id="ps-certs" className="profile-surface__section-label">Certifications</h3>
-            <p className="profile-surface__cert">CompTIA Network+</p>
-          </section>
-
-          <section className="profile-surface__section" aria-labelledby="ps-experience">
-            <h3 id="ps-experience" className="profile-surface__section-label">Experience</h3>
-            <p className="profile-surface__exp-role">IT Help Desk</p>
-            <p className="profile-surface__text">
-              Provided first-line technical support for hardware, software, and connectivity issues.
-              Handled user requests, diagnosed problems, documented resolutions, and maintained
-              system reliability across a professional environment.
-            </p>
-          </section>
-
-          <section className="profile-surface__section" aria-labelledby="ps-goal">
-            <h3 id="ps-goal" className="profile-surface__section-label">Goal</h3>
-            <p className="profile-surface__goal-title">Junior Software Engineer</p>
-            <p className="profile-surface__text">
-              Looking for a software engineering internship or entry-level role where I can contribute
-              to real products, grow quickly, and work alongside engineers who care about what they build.
-            </p>
-          </section>
-
-          <section className="profile-surface__section" aria-labelledby="ps-languages">
-            <h3 id="ps-languages" className="profile-surface__section-label">Languages</h3>
-            <div className="profile-surface__languages">
-              <div className="profile-surface__language">
-                <p className="profile-surface__language-name">English</p>
-                <p className="profile-surface__language-level">Professional Working Proficiency</p>
-              </div>
-              <div className="profile-surface__language">
-                <p className="profile-surface__language-name">Persian</p>
-                <p className="profile-surface__language-level">Native</p>
-              </div>
-            </div>
-          </section>
-
-          <div className="profile-surface__contact" role="group" aria-label="Contact links">
+          <div className="profile-surface__links">
             <a
               href="https://github.com/MahdiarMzi"
               target="_blank"
@@ -196,7 +134,7 @@ function ProfileSurface({ onClose }) {
               Email <span aria-hidden="true">↗</span>
             </a>
             <span className="workspace-detail__action workspace-detail__action--soon">
-              Resume Coming Soon
+              Resume Soon
             </span>
           </div>
 
