@@ -1256,6 +1256,20 @@ button {
   transition: opacity 220ms ease;
 }
 
+.home-canvas--work:not(.home-canvas--layout-ready) .orbit-module-wrap {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: none;
+}
+
+.home-canvas--work:not(.home-canvas--layout-ready) .orbit-lines,
+.home-canvas--work:not(.home-canvas--layout-ready) .orbit-rings,
+.home-canvas--work:not(.home-canvas--layout-ready) .focus-scroll-cue {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .orbit-module-wrap--stabilized {
   opacity: 1 !important;
 }

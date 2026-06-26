@@ -297,10 +297,12 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
   const [reducedMotion, setReducedMotion] = useState(
     () => window.matchMedia(REDUCED_MOTION_QUERY).matches
   );
+  const [orbitLayoutReady, setOrbitLayoutReady] = useState(false);
 
   const orbitRef = useRef(null);
   const scrollRef = useRef(null);
   const centerRef = useRef({ x: 0, y: 0 });
+  const orbitLayoutReadyRef = useRef(false);
   const moduleRefs = useRef({});
   const lineRefs = useRef({});
   const ringRefs = useRef({});
@@ -332,6 +334,12 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
 
   const workMode = activeView === 'work';
   const guided = workMode && !mobile && !reducedMotion;
+
+  const setLayoutReady = useCallback((ready) => {
+    if (orbitLayoutReadyRef.current === ready) return;
+    orbitLayoutReadyRef.current = ready;
+    setOrbitLayoutReady(ready);
+  }, []);
 
   const isStabilized = useCallback((id) => {
     const state = statesRef.current[id];
@@ -432,7 +440,9 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
 
   const applyFrame = useCallback(() => {
     const { x: cx, y: cy } = centerRef.current;
-    if (!cx && !cy) return;
+    if (!Number.isFinite(cx) || !Number.isFinite(cy) || (cx <= 0 && cy <= 0)) {
+      return false;
+    }
 
     const focus = getFocusState(focusProgressRef.current.current);
 
@@ -520,26 +530,108 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
       const cueOpacity = 1 - smoothstep(0.015, 0.08, focusProgressRef.current.current);
       scrollCueRef.current.style.opacity = cueOpacity.toFixed(3);
     }
+
+    return true;
   }, [getPosition, isStabilized]);
 
+  const resetOrbitInlineStyles = useCallback(() => {
+    MODULES.forEach((mod) => {
+      const element = moduleRefs.current[mod.id];
+      if (element) {
+        element.style.removeProperty('left');
+        element.style.removeProperty('top');
+        element.style.removeProperty('transform');
+        element.style.opacity = '0';
+        element.style.removeProperty('z-index');
+        element.classList.remove(
+          'orbit-module-wrap--stabilized',
+          'orbit-module-wrap--dragging',
+          'orbit-module-wrap--focused'
+        );
+      }
+
+      const line = lineRefs.current[mod.id];
+      if (line) {
+        line.setAttribute('x1', '0');
+        line.setAttribute('y1', '0');
+        line.setAttribute('x2', '0');
+        line.setAttribute('y2', '0');
+        line.setAttribute('opacity', '0');
+      }
+
+      const ring = ringRefs.current[mod.id];
+      if (ring) {
+        ring.setAttribute('cx', '0');
+        ring.setAttribute('cy', '0');
+        ring.setAttribute('rx', '0');
+        ring.setAttribute('ry', '0');
+        ring.setAttribute('opacity', '0');
+        ring.classList.remove('orbit-ring--active');
+      }
+    });
+  }, []);
+
   const updateGeometry = useCallback(() => {
-    if (!orbitRef.current) return;
+    if (!orbitRef.current) return false;
     const rect = orbitRef.current.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) {
+      centerRef.current = { x: 0, y: 0 };
+      return false;
+    }
     centerRef.current = { x: rect.width / 2, y: rect.height / 2 };
-    applyFrame();
+    return applyFrame();
   }, [applyFrame]);
 
   useLayoutEffect(() => {
-    if (mobile) return;
-    updateGeometry();
-  }, [mobile, updateGeometry]);
+    if (!workMode || mobile) {
+      centerRef.current = { x: 0, y: 0 };
+      setLayoutReady(false);
+      return undefined;
+    }
 
-  useEffect(() => {
-    if (mobile) return undefined;
-    const handleResize = () => updateGeometry();
+    let cancelled = false;
+    let frameId = null;
+    let observer = null;
+
+    setLayoutReady(false);
+    resetOrbitInlineStyles();
+
+    const measureUntilReady = () => {
+      if (cancelled) return;
+      const ready = updateGeometry();
+      setLayoutReady(ready);
+
+      if (!ready) {
+        frameId = requestAnimationFrame(measureUntilReady);
+      }
+    };
+
+    measureUntilReady();
+
+    if (orbitRef.current && 'ResizeObserver' in window) {
+      observer = new ResizeObserver(() => {
+        if (cancelled) return;
+        const ready = updateGeometry();
+        setLayoutReady(ready);
+      });
+      observer.observe(orbitRef.current);
+    }
+
+    const handleResize = () => {
+      setLayoutReady(false);
+      resetOrbitInlineStyles();
+      if (frameId) cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(measureUntilReady);
+    };
+
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [mobile, updateGeometry]);
+    return () => {
+      cancelled = true;
+      if (frameId) cancelAnimationFrame(frameId);
+      observer?.disconnect();
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [mobile, resetOrbitInlineStyles, setLayoutReady, updateGeometry, workMode]);
 
   useEffect(() => {
     if (guided) return;
@@ -622,7 +714,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
   }, [applyFrame, onOpenWork, onSelectWorkspace, reducedMotion, workMode]);
 
   useEffect(() => {
-    if (mobile || reducedMotion) return undefined;
+    if (!workMode || mobile || reducedMotion || !orbitLayoutReady) return undefined;
     let lastTime = 0;
 
     const tick = (timestamp) => {
@@ -714,7 +806,7 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [applyFrame, getPosition, isStabilized, mobile, reducedMotion]);
+  }, [applyFrame, getPosition, isStabilized, mobile, orbitLayoutReady, reducedMotion, workMode]);
 
   const setInteraction = useCallback((id, key, value) => {
     statesRef.current[id][key] = value;
@@ -962,7 +1054,12 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
 
   return (
     <div
-      className={`home-canvas home-canvas--${activeView}${guided ? ' home-canvas--guided' : ''}`}
+      className={[
+        'home-canvas',
+        `home-canvas--${activeView}`,
+        guided ? 'home-canvas--guided' : '',
+        orbitLayoutReady ? 'home-canvas--layout-ready' : '',
+      ].filter(Boolean).join(' ')}
       aria-label={guided ? 'Work — scroll to explore projects' : 'Work'}
       ref={scrollRef}
       onScroll={handleScroll}
@@ -1006,7 +1103,10 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
               {MODULES.map((mod, index) => (
                 <ellipse
                   key={mod.id}
-                  ref={(element) => { if (element) ringRefs.current[mod.id] = element; }}
+                  ref={(element) => {
+                    if (element) ringRefs.current[mod.id] = element;
+                    else delete ringRefs.current[mod.id];
+                  }}
                   cx="0" cy="0" rx="0" ry="0"
                   className={`orbit-ring orbit-ring--${(index % 3) + 1}`}
                 />
@@ -1017,7 +1117,10 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
               {MODULES.map((mod) => (
                 <line
                   key={mod.id}
-                  ref={(element) => { if (element) lineRefs.current[mod.id] = element; }}
+                  ref={(element) => {
+                    if (element) lineRefs.current[mod.id] = element;
+                    else delete lineRefs.current[mod.id];
+                  }}
                   x1="0" y1="0" x2="0" y2="0"
                 />
               ))}
@@ -1036,7 +1139,10 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
               <div
                 key={mod.id}
                 className="orbit-module-wrap"
-                ref={(element) => { if (element) moduleRefs.current[mod.id] = element; }}
+                ref={(element) => {
+                  if (element) moduleRefs.current[mod.id] = element;
+                  else delete moduleRefs.current[mod.id];
+                }}
               >
                 <WorkspaceModule {...moduleProps(mod)} />
               </div>
@@ -1049,7 +1155,10 @@ function HomeCanvas({ selectedWorkspace, onSelectWorkspace, onOpenWork, activeVi
                 key={mod.id}
                 project={mod}
                 index={index}
-                panelRef={(element) => { if (element) previewRefs.current[mod.id] = element; }}
+                panelRef={(element) => {
+                  if (element) previewRefs.current[mod.id] = element;
+                  else delete previewRefs.current[mod.id];
+                }}
                 onOpenDetail={onSelectWorkspace}
               />
             ))}
